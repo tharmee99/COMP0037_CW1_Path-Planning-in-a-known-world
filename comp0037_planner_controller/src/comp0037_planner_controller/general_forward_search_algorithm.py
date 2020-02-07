@@ -94,6 +94,8 @@ class GeneralForwardSearchAlgorithm(PlannerBase):
         while (self.isQueueEmpty() == False):
             self.popCellFromQueue()
         
+        print("reached somewhere")
+
         # Create or update the search grid from the occupancy grid and seed
         # unvisited and occupied cells.
         if (self.searchGrid is None):
