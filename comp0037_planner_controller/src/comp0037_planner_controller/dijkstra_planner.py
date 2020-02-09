@@ -1,32 +1,36 @@
 # -*- coding: utf-8 -*-
 
 from cell_based_forward_search import CellBasedForwardSearch
+from Queue import PriorityQueue
 
-class LIFOPlanner(CellBasedForwardSearch):
+from math import sqrt
 
-    # This implements a simple LIFO (last in first out or depth first) search algorithm
-    
+class DjikstraPlanner(CellBasedForwardSearch):
+
+    # Construct the new planner object
     def __init__(self, title, occupancyGrid):
         CellBasedForwardSearch.__init__(self, title, occupancyGrid)
-        self.lifoQueue = list()
+        self.dijkstraQueue = PriorityQueue()
         with open("performance_metrics.txt", "a") as f:
-            f.write('Depth First Search Algorithm: \n')
+            f.write('Dijkstra\'s Algorithm: \n')
 
     # Simply put on the end of the queue
     def pushCellOntoQueue(self, cell):
-        self.lifoQueue.append(cell)
+        pass
+        # dist = self.compute_euclidean_distance(cell, self.goal)
+        # self.dijkstraQueue.put((dist, cell))
 
     # Check the queue size is zero
     def isQueueEmpty(self):
-        return not self.lifoQueue
+        return self.dijkstraQueue.empty()
 
     # Return the length of the queue
     def getQueueLength(self):
-        return len(self.lifoQueue)
+        return len(self.dijkstraQueue)
 
     # Simply pull from the front of the list
     def popCellFromQueue(self):
-        cell = self.lifoQueue.pop()
+        cell = self.dijkstraQueue.get()[1]
         return cell
 
     def resolveDuplicate(self, cell, parentCell):
