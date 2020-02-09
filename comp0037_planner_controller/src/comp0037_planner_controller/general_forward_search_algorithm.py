@@ -78,7 +78,7 @@ class GeneralForwardSearchAlgorithm(PlannerBase):
         dX = cell.coords[0] - parentCell.coords[0]
         dY = cell.coords[1] - parentCell.coords[1]
         # Terrain cost 
-        #  Run this in matlab to visualise ro check the image
+        # Run this in matlab to visualise ro check the image
         # However, basically it builds up extremely quickly
         # x=[1:0.01:2];
         # c=min(1+(.2./((1.7-x).^2)).^2,1000);       
@@ -166,16 +166,16 @@ class GeneralForwardSearchAlgorithm(PlannerBase):
         # Do a final draw to make sure that the graphics are shown, even at the end state
         self.drawCurrentState()
         
-        print "Number of cells visited = " + str(self.numberOfCellsVisited)
-        print "Maximum Queue length = " + str (self.maxQueueLength)
+        print("Number of cells visited = " + str(self.numberOfCellsVisited))
+        print("Maximum Queue length = " + str (self.maxQueueLength))
         with open("performance_metrics.txt", "a") as f:
             f.write("Number of cells visited = {} \n".format(self.numberOfCellsVisited))
             f.write("Maximum queue length = {} \n".format(self.maxQueueLength))
         
         if self.goalReached:
-            print "Goal reached"
+            print("Goal reached")
         else:
-            print "Goal not reached"
+            print("Goal not reached")
 
         return self.goalReached
 
@@ -203,6 +203,7 @@ class GeneralForwardSearchAlgorithm(PlannerBase):
         # Initialise total angle turned
         self.totalAngleTurned = atan2((pathEndCell.coords[1]-pathEndCell.parent.coords[1]),
                                       (pathEndCell.coords[0]-pathEndCell.parent.coords[0]))
+        previous_pose=self.totalAngleTurned
         
         # Iterate back through and extract each parent in turn and add
         # it to the path. To work out the travel length along the
@@ -210,10 +211,15 @@ class GeneralForwardSearchAlgorithm(PlannerBase):
         while (cell is not None):
             path.waypoints.appendleft(cell)
             path.travelCost += self.computeLStageAdditiveCost(cell.parent, cell)
-            if (cell.parent is None):
-                self.totalAngleTurned += 0
-            else:
-                self.totalAngleTurned += atan2((cell.coords[1]-cell.parent.coords[1]),(cell.coords[0]-cell.parent.coords[0]))
+            if (cell.parent is not None):
+                current_pose = atan2((cell.coords[1]-cell.parent.coords[1]),(cell.coords[0]-cell.parent.coords[0]))
+                self.totalAngleTurned += (current_pose - previous_pose)
+                # For debugging
+                print()
+                print('Current Pose = {}'.format(current_pose))
+                print('Previous Pose = {}'.format(previous_pose))
+                print('Angle Turned = {}'.format(current_pose-previous_pose))
+                print()
             cell = cell.parent
             
         # Update the stats on the size of the path
