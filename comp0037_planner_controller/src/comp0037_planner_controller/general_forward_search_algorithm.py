@@ -30,6 +30,9 @@ class GeneralForwardSearchAlgorithm(PlannerBase):
     def isQueueEmpty(self):
         raise NotImplementedError()
 
+    def getQueueLength(self):
+        raise NotImplementedError()
+
     # This method finds the first cell (at the head of the queue),
     # removes it from the queue, and returns it.
     def popCellFromQueue(self):
@@ -93,8 +96,6 @@ class GeneralForwardSearchAlgorithm(PlannerBase):
         # the same method multiple times and have it work.
         while (self.isQueueEmpty() == False):
             self.popCellFromQueue()
-        
-        print("reached somewhere")
 
         # Create or update the search grid from the occupancy grid and seed
         # unvisited and occupied cells.
@@ -126,6 +127,7 @@ class GeneralForwardSearchAlgorithm(PlannerBase):
 
         # Reset the count
         self.numberOfCellsVisited = 0
+        self.maxQueueLength = 0
 
         # Indicates if we reached the goal or not
         self.goalReached = False
@@ -150,6 +152,7 @@ class GeneralForwardSearchAlgorithm(PlannerBase):
                     self.markCellAsVisitedAndRecordParent(nextCell, cell)
                     self.pushCellOntoQueue(nextCell)
                     self.numberOfCellsVisited = self.numberOfCellsVisited + 1
+                    self.maxQueueLength = self.getQueueLength() if(self.maxQueueLength < self.getQueueLength())
                 else:
                     self.resolveDuplicate(nextCell, cell)
 
@@ -163,7 +166,11 @@ class GeneralForwardSearchAlgorithm(PlannerBase):
         # Do a final draw to make sure that the graphics are shown, even at the end state
         self.drawCurrentState()
         
-        print "numberOfCellsVisited = " + str(self.numberOfCellsVisited)
+        print "Number of cells visited = " + str(self.numberOfCellsVisited)
+        print "Maximum Queue length = " + str (self.maxQueueLength)
+        with open("performance_metrics.txt", "a") as f:
+            f.write("Number of cells visited = {} \n".format(self.numberOfCellsVisited))
+            f.write("Maximum queue length = {} \n".format(self.maxQueueLength))
         
         if self.goalReached:
             print "Goal reached"
@@ -192,13 +199,18 @@ class GeneralForwardSearchAlgorithm(PlannerBase):
         # Start at the goal and find the parent. Find the cost associated with the parent
         cell = pathEndCell.parent
         path.travelCost = self.computeLStageAdditiveCost(pathEndCell.parent, pathEndCell)
+
+        # Initialise total angle turned
+        self.totalAngleTurned = atan2((pathEndCell.coords[1]-pathEndCell.parent.coords[1]),
+                                      (pathEndCell.coords[0]-pathEndCell.parent.coords[0]))
         
         # Iterate back through and extract each parent in turn and add
         # it to the path. To work out the travel length along the
         # path, you'll also have to add self at self stage.
         while (cell is not None):
             path.waypoints.appendleft(cell)
-            path.travelCost = path.travelCost + self.computeLStageAdditiveCost(cell.parent, cell)
+            path.travelCost += self.computeLStageAdditiveCost(cell.parent, cell)
+            self.totalAngleTurned += atan2((cell.coords[1]-cell.parent.coords[1]),(cell.coords[0]-cell.parent.coords[0]))
             cell = cell.parent
             
         # Update the stats on the size of the path
@@ -211,6 +223,10 @@ class GeneralForwardSearchAlgorithm(PlannerBase):
 
         print "Path travel cost = " + str(path.travelCost)
         print "Path cardinality = " + str(path.numberOfWaypoints)
+        with open("performance_metrics.txt", "a") as f:
+            f.write("Total angle turned by robot = {} \n".format(self.totalAngleTurned))
+            f.write("Path travel cost = {} \n".format(path.travelCost))
+            f.write("Path cardinality = {} \n".format(path.numberOfWaypoints))
         
         # Draw the path if requested
         if (self.showGraphics == True):
