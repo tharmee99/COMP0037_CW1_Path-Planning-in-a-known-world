@@ -214,6 +214,7 @@ class GeneralForwardSearchAlgorithm(PlannerBase):
             if (cell.parent is not None):
                 current_pose = atan2((cell.coords[1]-cell.parent.coords[1]),(cell.coords[0]-cell.parent.coords[0]))
                 self.totalAngleTurned += (current_pose - previous_pose)
+                previous_pose=current_pose
                 # For debugging
                 print()
                 print('Current Pose = {}'.format(current_pose))
@@ -230,8 +231,8 @@ class GeneralForwardSearchAlgorithm(PlannerBase):
         if path.goalReached is False:
             path.travelCost = float("inf")
 
-        print "Path travel cost = " + str(path.travelCost)
-        print "Path cardinality = " + str(path.numberOfWaypoints)
+        print("Path travel cost = " + str(path.travelCost))
+        print("Path cardinality = " + str(path.numberOfWaypoints))
         with open("performance_metrics.txt", "a") as f:
             f.write("Total angle turned by robot = {} \n".format(self.totalAngleTurned))
             f.write("Path travel cost = {} \n".format(path.travelCost))

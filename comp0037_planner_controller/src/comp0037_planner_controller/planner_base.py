@@ -18,7 +18,7 @@ class PlannerBase(object):
         self.occupancyGrid = occupancyGrid
         self.searchGrid = None
         
-        print "Occupancy grid dimensions = " + str(occupancyGrid.getWidthInCells()) + "x" + str(occupancyGrid.getHeightInCells())
+        print("Occupancy grid dimensions = " + str(occupancyGrid.getWidthInCells()) + "x" + str(occupancyGrid.getHeightInCells()))
         
         # Graphics and debug output support
         self.showGraphics = True
