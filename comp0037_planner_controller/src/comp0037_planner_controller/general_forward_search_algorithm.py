@@ -152,7 +152,7 @@ class GeneralForwardSearchAlgorithm(PlannerBase):
                     self.markCellAsVisitedAndRecordParent(nextCell, cell)
                     self.pushCellOntoQueue(nextCell)
                     self.numberOfCellsVisited = self.numberOfCellsVisited + 1
-                    self.maxQueueLength = self.getQueueLength() if(self.maxQueueLength < self.getQueueLength())
+                    self.maxQueueLength = self.getQueueLength() if (self.maxQueueLength < self.getQueueLength()) else self.maxQueueLength
                 else:
                     self.resolveDuplicate(nextCell, cell)
 
@@ -210,7 +210,10 @@ class GeneralForwardSearchAlgorithm(PlannerBase):
         while (cell is not None):
             path.waypoints.appendleft(cell)
             path.travelCost += self.computeLStageAdditiveCost(cell.parent, cell)
-            self.totalAngleTurned += atan2((cell.coords[1]-cell.parent.coords[1]),(cell.coords[0]-cell.parent.coords[0]))
+            if (cell.parent is None):
+                self.totalAngleTurned += 0
+            else:
+                self.totalAngleTurned += atan2((cell.coords[1]-cell.parent.coords[1]),(cell.coords[0]-cell.parent.coords[0]))
             cell = cell.parent
             
         # Update the stats on the size of the path

@@ -31,7 +31,7 @@ class GreedyPlanner(CellBasedForwardSearch):
 
     # Return the length of the queue
     def getQueueLength(self):
-        return len(self.greedyQueue)
+        return self.greedyQueue.qsize()
 
     # Simply pull from the front of the list
     def popCellFromQueue(self):
