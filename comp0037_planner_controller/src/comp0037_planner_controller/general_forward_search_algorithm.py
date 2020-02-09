@@ -21,7 +21,7 @@ class GeneralForwardSearchAlgorithm(PlannerBase):
         # Flag to store if the last plan was successful
         self.goalReached = None
 
-    # These methods manage the queue of cells to be visied.
+    # These methods manage the queue of cells to be visited.
     def pushCellOntoQueue(self, cell):
         raise NotImplementedError()
 

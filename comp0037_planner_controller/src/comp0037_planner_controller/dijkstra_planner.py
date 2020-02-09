@@ -34,5 +34,5 @@ class DjikstraPlanner(CellBasedForwardSearch):
         return cell
 
     def resolveDuplicate(self, cell, parentCell):
-        # Nothing to do in self case
-        pass
+        
+        
