@@ -24,7 +24,6 @@ class AStarPlanner(CellBasedForwardSearch):
             return sqrt(pow(del_x,2)+pow(del_y,2))
             
         elif(heuristics='octile'):
-            x_diff = abs(cell.coords[0]-self.goal.coords[0])
             y_diff = abs(cell.coords[1]-self.goal.coords[1])
             return max(x_diff,y_diff) + (sqrt(2)-1)*min(x_diff,y_diff)
 

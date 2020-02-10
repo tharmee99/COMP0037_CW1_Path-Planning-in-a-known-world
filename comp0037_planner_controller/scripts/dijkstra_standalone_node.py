@@ -33,6 +33,5 @@ print("done more things")
 # goal was found and False otherwise
 goalReached = planner.search(start, goal)
 
-print("oof")
 # Extract the path. This is based on the last search carried out.
 path = planner.extractPathToGoal()

@@ -228,13 +228,6 @@ class GeneralForwardSearchAlgorithm(PlannerBase):
                     turningAngle = 360 - turningAngle
 
                 self.totalAngleTurned += turningAngle
-                
-                # For debugging
-                print()
-                print('Current Pose = {}'.format(currentTrajectory))
-                print('Previous Pose = {}'.format(perviousTrajectory))
-                print('Angle Turned = {}'.format(abs(currentTrajectory - perviousTrajectory)))
-                print()
 
                 perviousTrajectory = currentTrajectory
             cell = cell.parent

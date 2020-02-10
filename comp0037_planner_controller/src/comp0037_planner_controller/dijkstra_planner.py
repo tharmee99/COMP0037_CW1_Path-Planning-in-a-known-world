@@ -16,8 +16,11 @@ class DijkstraPlanner(CellBasedForwardSearch):
 
     # Simply put on the end of the queue    
     def pushCellOntoQueue(self, cell):
-        costFromParent = self.computeLStageAdditiveCost(cell.parent, cell)
-        self.djikstraQueue.put((costFromParent, cell))
+
+        if cell != self.start:
+            cell.pathCost = cell.parent.pathCost + self.computeLStageAdditiveCost(cell.parent, cell)
+
+        self.djikstraQueue.put((cell.pathCost, cell))
 
     # Check the queue size is zero
     def isQueueEmpty(self):
@@ -33,8 +36,9 @@ class DijkstraPlanner(CellBasedForwardSearch):
         return cell
 
     def resolveDuplicate(self, cell, parentCell):
-        newPathCost = cell.pathCost + self.computeLStageAdditiveCost(parentCell, cell)
+        newPathCost = parentCell.pathCost + self.computeLStageAdditiveCost(parentCell, cell)
+
         if(newPathCost < cell.pathCost):
             cell.parent = parentCell
             cell.pathCost = newPathCost
-            self.aStarQueue.put((newPathCost, cell.parent, cell))
+            self.djikstraQueue.put((newPathCost, cell))
