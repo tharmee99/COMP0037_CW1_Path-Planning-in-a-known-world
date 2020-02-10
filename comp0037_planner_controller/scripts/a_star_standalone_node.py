@@ -1,13 +1,13 @@
 #! /usr/bin/env python
 
 # Import the needed types.
-from comp0037_planner_controller.dijkstra_planner import DijkstraPlanner
+from comp0037_planner_controller.aStar_planner import AStarPlanner
 from comp0037_planner_controller.occupancy_grid import OccupancyGrid
 import map_getter
 import rospy
 
 # Initialise node
-rospy.init_node('dijkstra_standalone', anonymous=True)
+rospy.init_node('a_star_standalone', anonymous=True)
 
 # Mapgetter  helps load maps off the map server
 mapGetter = map_getter.MapGetter()
@@ -18,7 +18,7 @@ goal = rospy.get_param("goal_pose")
 
 # Create the planner. The first field is the title which will appear in the
 # graphics window, the second the occupancy grid used.
-planner = DijkstraPlanner('Dijkstra Planner', occupancyGrid)
+planner = AStarPlanner('A* Planner', occupancyGrid, 'octile')
 
 # This causes the planner to slow down and pause for things like key entries
 planner.setRunInteractively(True)
