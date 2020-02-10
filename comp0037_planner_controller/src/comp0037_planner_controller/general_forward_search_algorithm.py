@@ -186,6 +186,15 @@ class GeneralForwardSearchAlgorithm(PlannerBase):
     # depending upon the planner used, the results might not be
     # valid. In this case, the path will probably not terminate at the
     # start cell.
+
+    def getAngle(self, parentCell, cell):
+        del_y = parentCell.coords[1]-cell.coords[1]
+        del_x = parentCell.coords[0]-cell.coords[0]
+
+        angle = atan2(del_y,del_x) * (180/pi)
+
+        return angle
+
     def extractPathEndingAtCell(self, pathEndCell, colour):
 
         # Construct the path object and mark if the goal was reached
@@ -201,10 +210,9 @@ class GeneralForwardSearchAlgorithm(PlannerBase):
         path.travelCost = self.computeLStageAdditiveCost(pathEndCell.parent, pathEndCell)
 
         # Initialise total angle turned
-        self.totalAngleTurned = atan2((pathEndCell.coords[1]-pathEndCell.parent.coords[1]),
-                                      (pathEndCell.coords[0]-pathEndCell.parent.coords[0]))
-        previous_pose=self.totalAngleTurned
-        
+        self.totalAngleTurned = 0
+        perviousTrajectory = self.getAngle(pathEndCell.parent, pathEndCell)
+
         # Iterate back through and extract each parent in turn and add
         # it to the path. To work out the travel length along the
         # path, you'll also have to add self at self stage.
@@ -212,15 +220,23 @@ class GeneralForwardSearchAlgorithm(PlannerBase):
             path.waypoints.appendleft(cell)
             path.travelCost += self.computeLStageAdditiveCost(cell.parent, cell)
             if (cell.parent is not None):
-                current_pose = atan2((cell.coords[1]-cell.parent.coords[1]),(cell.coords[0]-cell.parent.coords[0]))
-                self.totalAngleTurned += (current_pose - previous_pose)
-                previous_pose=current_pose
+                currentTrajectory = self.getAngle(cell.parent, cell)
+
+                turningAngle = abs(currentTrajectory - perviousTrajectory)
+
+                if(turningAngle > 180):
+                    turningAngle = 360 - turningAngle
+
+                self.totalAngleTurned += turningAngle
+                
                 # For debugging
                 print()
-                print('Current Pose = {}'.format(current_pose))
-                print('Previous Pose = {}'.format(previous_pose))
-                print('Angle Turned = {}'.format(current_pose-previous_pose))
+                print('Current Pose = {}'.format(currentTrajectory))
+                print('Previous Pose = {}'.format(perviousTrajectory))
+                print('Angle Turned = {}'.format(abs(currentTrajectory - perviousTrajectory)))
                 print()
+
+                perviousTrajectory = currentTrajectory
             cell = cell.parent
             
         # Update the stats on the size of the path
@@ -231,6 +247,7 @@ class GeneralForwardSearchAlgorithm(PlannerBase):
         if path.goalReached is False:
             path.travelCost = float("inf")
 
+        print("Total angle turned by robot = " + str(self.totalAngleTurned))
         print("Path travel cost = " + str(path.travelCost))
         print("Path cardinality = " + str(path.numberOfWaypoints))
         with open("performance_metrics.txt", "a") as f:
