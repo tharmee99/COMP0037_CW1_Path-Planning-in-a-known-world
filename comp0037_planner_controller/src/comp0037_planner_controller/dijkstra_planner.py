@@ -5,34 +5,36 @@ from Queue import PriorityQueue
 
 from math import sqrt
 
-class DjikstraPlanner(CellBasedForwardSearch):
+class DijkstraPlanner(CellBasedForwardSearch):
 
     # Construct the new planner object
     def __init__(self, title, occupancyGrid):
         CellBasedForwardSearch.__init__(self, title, occupancyGrid)
-        self.dijkstraQueue = PriorityQueue()
+        self.djikstraQueue = PriorityQueue()
         with open("performance_metrics.txt", "a") as f:
             f.write('Dijkstra\'s Algorithm: \n')
 
-    # Simply put on the end of the queue
+    # Simply put on the end of the queue    
     def pushCellOntoQueue(self, cell):
-        pass
-        # dist = self.compute_euclidean_distance(cell, self.goal)
-        # self.dijkstraQueue.put((dist, cell))
+        costFromParent = self.computeLStageAdditiveCost(cell.parent, cell)
+        self.djikstraQueue.put((costFromParent, cell))
 
     # Check the queue size is zero
     def isQueueEmpty(self):
-        return self.dijkstraQueue.empty()
+        return self.djikstraQueue.empty()
 
     # Return the length of the queue
     def getQueueLength(self):
-        return len(self.dijkstraQueue)
+        return self.djikstraQueue.qsize()
 
     # Simply pull from the front of the list
     def popCellFromQueue(self):
-        cell = self.dijkstraQueue.get()[1]
+        cell = self.djikstraQueue.get()[1]
         return cell
 
     def resolveDuplicate(self, cell, parentCell):
-        
-        
+        newPathCost = cell.pathCost + self.computeLStageAdditiveCost(parentCell, cell)
+        if(newPathCost < cell.pathCost):
+            cell.parent = parentCell
+            cell.pathCost = newPathCost
+            self.aStarQueue.put((newPathCost, cell.parent, cell))
