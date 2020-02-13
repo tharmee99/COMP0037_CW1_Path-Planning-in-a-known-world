@@ -23,16 +23,13 @@ planner = GreedyPlanner('Greedy Planner', occupancyGrid)
 # This causes the planner to slow down and pause for things like key entries
 planner.setRunInteractively(True)
 
-print("done things")
 # This specifies the height of the window drawn showing the occupancy grid. Everything
 # should scale automatically to properly preserve the aspect ratio
 planner.setWindowHeightInPixels(400)
 
-print("done more things")
 # Search and see if a path can be found. Returns True if a path from the start to the
 # goal was found and False otherwise
 goalReached = planner.search(start, goal)
 
-print("oof")
 # Extract the path. This is based on the last search carried out.
 path = planner.extractPathToGoal()

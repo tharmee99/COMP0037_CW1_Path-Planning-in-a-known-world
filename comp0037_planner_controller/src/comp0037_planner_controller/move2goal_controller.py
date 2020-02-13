@@ -45,9 +45,9 @@ class Move2GoalController(ControllerBase):
         angleError = self.shortestAngularDistance(self.pose.theta, atan2(dY, dX))
        
         while (distanceError >= self.distanceErrorTolerance) & (not rospy.is_shutdown()):
-            #print("Current Pose: x: {}, y:{} , theta: {}\nGoal: x: {}, y: {}\n".format(self.pose.x, self.pose.y,
-            #                                                                           self.pose.theta, waypoint[0],
-            #                                                                           waypoint[1]))
+            print("Current Pose: x: {}, y:{} , theta: {}\nGoal: x: {}, y: {}\n".format(self.pose.x, self.pose.y,
+                                                                                      self.pose.theta, waypoint[0],
+                                                                                      waypoint[1]))
             print("Distance Error: {}\nAngular Error: {}".format(distanceError, angleError))
 
             # Proportional Controller

@@ -1,0 +1,11 @@
+Dijkstra's Algorithm: 
+Number of cells visited = 3311 
+Maximum queue length = 93 
+Total angle turned by robot = 270.0 
+Path travel cost = 105.303667563 
+Path cardinality = 92 
+Number of cells visited = 4441 
+Maximum queue length = 123 
+Total angle turned by robot = 585.0 
+Path travel cost = 130.758478329 
+Path cardinality = 103 

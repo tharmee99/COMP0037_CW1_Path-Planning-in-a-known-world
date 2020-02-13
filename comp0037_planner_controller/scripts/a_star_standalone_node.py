@@ -5,6 +5,7 @@ from comp0037_planner_controller.aStar_planner import AStarPlanner
 from comp0037_planner_controller.occupancy_grid import OccupancyGrid
 import map_getter
 import rospy
+import sys
 
 # Initialise node
 rospy.init_node('a_star_standalone', anonymous=True)
@@ -18,7 +19,7 @@ goal = rospy.get_param("goal_pose")
 
 # Create the planner. The first field is the title which will appear in the
 # graphics window, the second the occupancy grid used.
-planner = AStarPlanner('A* Planner', occupancyGrid, 'octile')
+planner = AStarPlanner('A* Planner', occupancyGrid, sys.argv[1])
 
 # This causes the planner to slow down and pause for things like key entries
 planner.setRunInteractively(True)

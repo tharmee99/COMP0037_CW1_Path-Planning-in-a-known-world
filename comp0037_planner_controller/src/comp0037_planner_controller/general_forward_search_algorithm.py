@@ -8,6 +8,9 @@ from cell import *
 from planned_path import PlannedPath
 from math import *
 import rospy
+import glob
+
+location_to_results=glob.glob('../*/src/*/comp0037_planner_controller/scripts/performance_metrics.txt')[0]
 
 class GeneralForwardSearchAlgorithm(PlannerBase):
 
@@ -168,7 +171,7 @@ class GeneralForwardSearchAlgorithm(PlannerBase):
         
         print("Number of cells visited = " + str(self.numberOfCellsVisited))
         print("Maximum Queue length = " + str (self.maxQueueLength))
-        with open("performance_metrics.txt", "a") as f:
+        with open(location_to_results, "a") as f:
             f.write("Number of cells visited = {} \n".format(self.numberOfCellsVisited))
             f.write("Maximum queue length = {} \n".format(self.maxQueueLength))
         
@@ -243,7 +246,7 @@ class GeneralForwardSearchAlgorithm(PlannerBase):
         print("Total angle turned by robot = " + str(self.totalAngleTurned))
         print("Path travel cost = " + str(path.travelCost))
         print("Path cardinality = " + str(path.numberOfWaypoints))
-        with open("performance_metrics.txt", "a") as f:
+        with open(location_to_results, "a") as f:
             f.write("Total angle turned by robot = {} \n".format(self.totalAngleTurned))
             f.write("Path travel cost = {} \n".format(path.travelCost))
             f.write("Path cardinality = {} \n".format(path.numberOfWaypoints))

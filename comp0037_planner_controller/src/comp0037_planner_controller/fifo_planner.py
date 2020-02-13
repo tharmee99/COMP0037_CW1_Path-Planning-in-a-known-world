@@ -2,6 +2,10 @@
 
 from cell_based_forward_search import CellBasedForwardSearch
 from collections import deque
+import glob
+
+location_to_results=glob.glob('../*/src/*/comp0037_planner_controller/scripts/performance_metrics.txt')[0]
+
 
 # This class implements the FIFO - or breadth first search - planning
 # algorithm. It works by using a double ended queue: cells are pushed
@@ -14,7 +18,7 @@ class FIFOPlanner(CellBasedForwardSearch):
     def __init__(self, title, occupancyGrid):
         CellBasedForwardSearch.__init__(self, title, occupancyGrid)
         self.fifoQueue = deque()
-        with open("performance_metrics.txt", "a") as f:
+        with open(location_to_results, "w+") as f:
             f.write('Breadth First Search Algorithm: \n')
 
     # Simply put on the end of the queue
