@@ -4,9 +4,6 @@ from dynamic_planner import DynamicPlanner
 from Queue import PriorityQueue
 
 from math import sqrt
-import glob
-
-location_to_results = glob.glob('../*/src/*/comp0037_planner_controller/scripts/performance_metrics.txt')[0]
 
 heurstic_list = ["constant", "euclidean", "octile", "manhattan"]
 
@@ -15,13 +12,12 @@ class AStarPlanner(DynamicPlanner):
     # Construct the new planner object
     def __init__(self, title, occupancyGrid, heuristic):
         DynamicPlanner.__init__(self, title, occupancyGrid)
-
-        if(heuristic.lower() not in heurstic_list):
-            heuristic = "Dijkstra's (0 Heuristic)"
         
-        with open(location_to_results, "w+") as f:
-            f.write('A* Algorithm (Heuristic: {}): \n'.format(heuristic))
-            self.heuristics = heuristic
+        if(heuristic.lower() not in heurstic_list):
+            heuristic = "0"
+        
+        self.plannerName = 'A* Algorithm (Heuristic: {})'.format(heuristic.capitalize())
+        self.heuristics = heuristic.lower()
 
     def calc_heuristics(self, cell, parentCell):
         if(self.heuristics.lower() == heurstic_list[0]):

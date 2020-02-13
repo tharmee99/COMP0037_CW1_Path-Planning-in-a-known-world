@@ -4,18 +4,14 @@ from cell_based_forward_search import CellBasedForwardSearch
 from Queue import PriorityQueue
 
 from math import sqrt
-import glob
-
-location_to_results=glob.glob('../*/src/*/comp0037_planner_controller/scripts/performance_metrics.txt')[0]
 
 class GreedyPlanner(CellBasedForwardSearch):
 
     # Construct the new planner object
     def __init__(self, title, occupancyGrid):
         CellBasedForwardSearch.__init__(self, title, occupancyGrid)
+        self.plannerName = "Greedy Planner"
         self.greedyQueue = PriorityQueue()
-        with open(location_to_results, "w+") as f:
-            f.write('Greedy Queue Algorithm: \n')
 
     def compute_euclidean_distance(self, cell1, cell2):
         del_x = cell2.coords[0] - cell1.coords[0]

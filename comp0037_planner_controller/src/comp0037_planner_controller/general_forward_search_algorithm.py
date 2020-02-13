@@ -7,10 +7,9 @@ from collections import deque
 from cell import *
 from planned_path import PlannedPath
 from math import *
+import json
 import rospy
-import glob
-
-location_to_results=glob.glob('../*/src/*/comp0037_planner_controller/scripts/performance_metrics.txt')[0]
+import os.path
 
 class GeneralForwardSearchAlgorithm(PlannerBase):
 
@@ -20,7 +19,16 @@ class GeneralForwardSearchAlgorithm(PlannerBase):
     
     def __init__(self, title, occupancyGrid):
         PlannerBase.__init__(self, title, occupancyGrid)
-         
+        self.exportDirectory = ""
+        self.plannerName = ""
+        self.performanceMetrics = {
+            "numberOfCellsVisited" : None,
+            "maximumLengthOfQueue" : None,
+            "totalAngleTurned" : None,
+            "pathTravelCost" : None,
+            "pathCardinality" : None
+        }
+
         # Flag to store if the last plan was successful
         self.goalReached = None
 
@@ -171,9 +179,13 @@ class GeneralForwardSearchAlgorithm(PlannerBase):
         
         print("Number of cells visited = " + str(self.numberOfCellsVisited))
         print("Maximum Queue length = " + str (self.maxQueueLength))
-        with open(location_to_results, "a") as f:
-            f.write("Number of cells visited = {} \n".format(self.numberOfCellsVisited))
-            f.write("Maximum queue length = {} \n".format(self.maxQueueLength))
+
+        self.performanceMetrics["numberOfCellsVisited"] = self.numberOfCellsVisited
+        self.performanceMetrics["maximumLengthOfQueue"] = self.maxQueueLength
+
+        # with open(self.exportDirectory, "a") as f:
+        #     f.write("Number of cells visited = {} \n".format(self.numberOfCellsVisited))
+        #     f.write("Maximum queue length = {} \n".format(self.maxQueueLength))
         
         if self.goalReached:
             print("Goal reached")
@@ -246,10 +258,15 @@ class GeneralForwardSearchAlgorithm(PlannerBase):
         print("Total angle turned by robot = " + str(self.totalAngleTurned))
         print("Path travel cost = " + str(path.travelCost))
         print("Path cardinality = " + str(path.numberOfWaypoints))
-        with open(location_to_results, "a") as f:
-            f.write("Total angle turned by robot = {} \n".format(self.totalAngleTurned))
-            f.write("Path travel cost = {} \n".format(path.travelCost))
-            f.write("Path cardinality = {} \n".format(path.numberOfWaypoints))
+
+        self.performanceMetrics["totalAngleTurned"] = self.totalAngleTurned
+        self.performanceMetrics["pathTravelCost"] = path.travelCost
+        self.performanceMetrics["pathCardinality"] = path.numberOfWaypoints
+
+        # with open(self.exportDirectory, "a") as f:
+        #     f.write("Total angle turned by robot = {} \n".format())
+        #     f.write("Path travel cost = {} \n".format(path.travelCost))
+        #     f.write("Path cardinality = {} \n".format(path.numberOfWaypoints))
         
         # Draw the path if requested
         if (self.showGraphics == True):
@@ -272,4 +289,23 @@ class GeneralForwardSearchAlgorithm(PlannerBase):
         path = self.extractPathEndingAtCell(self.goal, 'yellow')
        
         return path
+
+    def exportMetrics(self):
+        data = {}
+
+        if(not os.path.isfile(self.exportDirectory)):
+            with open(self.exportDirectory, 'w+') as outfile:
+                json.dump(data, outfile)
+            pass
+
+        with open(self.exportDirectory) as json_file:
+            data = json.load(json_file)
+
+        data[self.plannerName] = self.performanceMetrics
+
+        with open(self.exportDirectory, 'w+') as outfile:
+            json.dump(data, outfile)
+
+
+        
             

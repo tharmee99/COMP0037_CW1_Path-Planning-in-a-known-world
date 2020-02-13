@@ -5,6 +5,7 @@ from comp0037_planner_controller.lifo_planner import LIFOPlanner
 from comp0037_planner_controller.occupancy_grid import OccupancyGrid
 import map_getter
 import rospy
+import sys
 
 #Initialise node
 rospy.init_node('lifo_standalone', anonymous=True)
@@ -19,6 +20,7 @@ goal = rospy.get_param("goal_pose")
 # Create the planner. The first field is the title which will appear in the
 # graphics window, the second the occupancy grid used.
 planner = LIFOPlanner('Depth First Search', occupancyGrid)
+planner.exportDirectory = sys.argv[1]
 
 # This causes the planner to slow down and pause for things like key entries
 planner.setRunInteractively(True)
@@ -33,3 +35,5 @@ goalReached = planner.search(start, goal)
 
 # Extract the path. This is based on the last search carried out.
 path = planner.extractPathToGoal()
+
+planner.exportMetrics()
