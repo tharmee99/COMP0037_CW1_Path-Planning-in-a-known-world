@@ -5,6 +5,7 @@ from comp0037_planner_controller.greedy_planner import GreedyPlanner
 from comp0037_planner_controller.occupancy_grid import OccupancyGrid
 import map_getter
 import rospy
+import sys
 
 # Initialise node
 rospy.init_node('greedy_standalone', anonymous=True)
@@ -19,20 +20,20 @@ goal = rospy.get_param("goal_pose")
 # Create the planner. The first field is the title which will appear in the
 # graphics window, the second the occupancy grid used.
 planner = GreedyPlanner('Greedy Planner', occupancyGrid)
+planner.exportDirectory = sys.argv[1]
 
 # This causes the planner to slow down and pause for things like key entries
 planner.setRunInteractively(True)
 
-print("done things")
 # This specifies the height of the window drawn showing the occupancy grid. Everything
 # should scale automatically to properly preserve the aspect ratio
 planner.setWindowHeightInPixels(400)
 
-print("done more things")
 # Search and see if a path can be found. Returns True if a path from the start to the
 # goal was found and False otherwise
 goalReached = planner.search(start, goal)
 
-print("oof")
 # Extract the path. This is based on the last search carried out.
 path = planner.extractPathToGoal()
+
+planner.exportMetrics()

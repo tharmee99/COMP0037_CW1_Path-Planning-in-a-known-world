@@ -17,7 +17,7 @@ from comp0037_planner_controller.srv import *
 from comp0037_planner_controller.occupancy_grid import OccupancyGrid
 
 # The planner used to figure out the path
-from comp0037_planner_controller.fifo_planner import FIFOPlanner
+from comp0037_planner_controller.z_planner import FIFOPlanner
 
 # The controller to drive the robot along the path
 from comp0037_planner_controller.move2goal_controller import Move2GoalController

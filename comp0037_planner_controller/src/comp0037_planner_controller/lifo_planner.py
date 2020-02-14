@@ -8,6 +8,7 @@ class LIFOPlanner(CellBasedForwardSearch):
     
     def __init__(self, title, occupancyGrid):
         CellBasedForwardSearch.__init__(self, title, occupancyGrid)
+        self.plannerName = "Depth First (LIFO)"
         self.lifoQueue = list()
 
     # Simply put on the end of the queue
@@ -17,6 +18,10 @@ class LIFOPlanner(CellBasedForwardSearch):
     # Check the queue size is zero
     def isQueueEmpty(self):
         return not self.lifoQueue
+
+    # Return the length of the queue
+    def getQueueLength(self):
+        return len(self.lifoQueue)
 
     # Simply pull from the front of the list
     def popCellFromQueue(self):

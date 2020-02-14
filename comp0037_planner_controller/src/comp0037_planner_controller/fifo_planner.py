@@ -13,6 +13,7 @@ class FIFOPlanner(CellBasedForwardSearch):
     # Construct the new planner object
     def __init__(self, title, occupancyGrid):
         CellBasedForwardSearch.__init__(self, title, occupancyGrid)
+        self.plannerName = "Breadth First (FIFO)"
         self.fifoQueue = deque()
 
     # Simply put on the end of the queue
@@ -22,6 +23,10 @@ class FIFOPlanner(CellBasedForwardSearch):
     # Check the queue size is zero
     def isQueueEmpty(self):
         return not self.fifoQueue
+
+    # Return the length of the queue
+    def getQueueLength(self):
+        return len(self.fifoQueue)
 
     # Simply pull from the front of the list
     def popCellFromQueue(self):

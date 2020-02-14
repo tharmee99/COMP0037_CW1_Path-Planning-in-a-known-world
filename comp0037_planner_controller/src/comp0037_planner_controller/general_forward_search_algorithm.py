@@ -7,7 +7,9 @@ from collections import deque
 from cell import *
 from planned_path import PlannedPath
 from math import *
+import json
 import rospy
+import os.path
 
 class GeneralForwardSearchAlgorithm(PlannerBase):
 
@@ -17,17 +19,29 @@ class GeneralForwardSearchAlgorithm(PlannerBase):
     
     def __init__(self, title, occupancyGrid):
         PlannerBase.__init__(self, title, occupancyGrid)
-         
+        self.exportDirectory = ""
+        self.plannerName = ""
+        self.performanceMetrics = {
+            "numberOfCellsVisited" : None,
+            "maximumLengthOfQueue" : None,
+            "totalAngleTurned" : None,
+            "pathTravelCost" : None,
+            "pathCardinality" : None
+        }
+
         # Flag to store if the last plan was successful
         self.goalReached = None
 
-    # These methods manage the queue of cells to be visied.
+    # These methods manage the queue of cells to be visited.
     def pushCellOntoQueue(self, cell):
         raise NotImplementedError()
 
     # This method returns a boolean - true if the queue is empty,
     # false if it still has some cells on it.
     def isQueueEmpty(self):
+        raise NotImplementedError()
+
+    def getQueueLength(self):
         raise NotImplementedError()
 
     # This method finds the first cell (at the head of the queue),
@@ -75,7 +89,7 @@ class GeneralForwardSearchAlgorithm(PlannerBase):
         dX = cell.coords[0] - parentCell.coords[0]
         dY = cell.coords[1] - parentCell.coords[1]
         # Terrain cost 
-        #  Run this in matlab to visualise ro check the image
+        # Run this in matlab to visualise ro check the image
         # However, basically it builds up extremely quickly
         # x=[1:0.01:2];
         # c=min(1+(.2./((1.7-x).^2)).^2,1000);       
@@ -93,8 +107,6 @@ class GeneralForwardSearchAlgorithm(PlannerBase):
         # the same method multiple times and have it work.
         while (self.isQueueEmpty() == False):
             self.popCellFromQueue()
-        
-        print("reached somewhere")
 
         # Create or update the search grid from the occupancy grid and seed
         # unvisited and occupied cells.
@@ -126,6 +138,7 @@ class GeneralForwardSearchAlgorithm(PlannerBase):
 
         # Reset the count
         self.numberOfCellsVisited = 0
+        self.maxQueueLength = 0
 
         # Indicates if we reached the goal or not
         self.goalReached = False
@@ -150,6 +163,7 @@ class GeneralForwardSearchAlgorithm(PlannerBase):
                     self.markCellAsVisitedAndRecordParent(nextCell, cell)
                     self.pushCellOntoQueue(nextCell)
                     self.numberOfCellsVisited = self.numberOfCellsVisited + 1
+                    self.maxQueueLength = self.getQueueLength() if (self.maxQueueLength < self.getQueueLength()) else self.maxQueueLength
                 else:
                     self.resolveDuplicate(nextCell, cell)
 
@@ -163,12 +177,20 @@ class GeneralForwardSearchAlgorithm(PlannerBase):
         # Do a final draw to make sure that the graphics are shown, even at the end state
         self.drawCurrentState()
         
-        print "numberOfCellsVisited = " + str(self.numberOfCellsVisited)
+        print("Number of cells visited = " + str(self.numberOfCellsVisited))
+        print("Maximum Queue length = " + str (self.maxQueueLength))
+
+        self.performanceMetrics["numberOfCellsVisited"] = self.numberOfCellsVisited
+        self.performanceMetrics["maximumLengthOfQueue"] = self.maxQueueLength
+
+        # with open(self.exportDirectory, "a") as f:
+        #     f.write("Number of cells visited = {} \n".format(self.numberOfCellsVisited))
+        #     f.write("Maximum queue length = {} \n".format(self.maxQueueLength))
         
         if self.goalReached:
-            print "Goal reached"
+            print("Goal reached")
         else:
-            print "Goal not reached"
+            print("Goal not reached")
 
         return self.goalReached
 
@@ -179,6 +201,15 @@ class GeneralForwardSearchAlgorithm(PlannerBase):
     # depending upon the planner used, the results might not be
     # valid. In this case, the path will probably not terminate at the
     # start cell.
+
+    def getAngle(self, parentCell, cell):
+        del_y = parentCell.coords[1]-cell.coords[1]
+        del_x = parentCell.coords[0]-cell.coords[0]
+
+        angle = atan2(del_y,del_x) * (180/pi)
+
+        return angle
+
     def extractPathEndingAtCell(self, pathEndCell, colour):
 
         # Construct the path object and mark if the goal was reached
@@ -192,13 +223,28 @@ class GeneralForwardSearchAlgorithm(PlannerBase):
         # Start at the goal and find the parent. Find the cost associated with the parent
         cell = pathEndCell.parent
         path.travelCost = self.computeLStageAdditiveCost(pathEndCell.parent, pathEndCell)
-        
+
+        # Initialise total angle turned
+        self.totalAngleTurned = 0
+        perviousTrajectory = self.getAngle(pathEndCell.parent, pathEndCell)
+
         # Iterate back through and extract each parent in turn and add
         # it to the path. To work out the travel length along the
         # path, you'll also have to add self at self stage.
         while (cell is not None):
             path.waypoints.appendleft(cell)
-            path.travelCost = path.travelCost + self.computeLStageAdditiveCost(cell.parent, cell)
+            path.travelCost += self.computeLStageAdditiveCost(cell.parent, cell)
+            if (cell.parent is not None):
+                currentTrajectory = self.getAngle(cell.parent, cell)
+
+                turningAngle = abs(currentTrajectory - perviousTrajectory)
+
+                if(turningAngle > 180):
+                    turningAngle = 360 - turningAngle
+
+                self.totalAngleTurned += turningAngle
+
+                perviousTrajectory = currentTrajectory
             cell = cell.parent
             
         # Update the stats on the size of the path
@@ -209,8 +255,18 @@ class GeneralForwardSearchAlgorithm(PlannerBase):
         if path.goalReached is False:
             path.travelCost = float("inf")
 
-        print "Path travel cost = " + str(path.travelCost)
-        print "Path cardinality = " + str(path.numberOfWaypoints)
+        print("Total angle turned by robot = " + str(self.totalAngleTurned))
+        print("Path travel cost = " + str(path.travelCost))
+        print("Path cardinality = " + str(path.numberOfWaypoints))
+
+        self.performanceMetrics["totalAngleTurned"] = self.totalAngleTurned
+        self.performanceMetrics["pathTravelCost"] = path.travelCost
+        self.performanceMetrics["pathCardinality"] = path.numberOfWaypoints
+
+        # with open(self.exportDirectory, "a") as f:
+        #     f.write("Total angle turned by robot = {} \n".format())
+        #     f.write("Path travel cost = {} \n".format(path.travelCost))
+        #     f.write("Path cardinality = {} \n".format(path.numberOfWaypoints))
         
         # Draw the path if requested
         if (self.showGraphics == True):
@@ -233,4 +289,23 @@ class GeneralForwardSearchAlgorithm(PlannerBase):
         path = self.extractPathEndingAtCell(self.goal, 'yellow')
        
         return path
+
+    def exportMetrics(self):
+        data = {}
+
+        if(not os.path.isfile(self.exportDirectory)):
+            with open(self.exportDirectory, 'w+') as outfile:
+                json.dump(data, outfile)
+            pass
+
+        with open(self.exportDirectory) as json_file:
+            data = json.load(json_file)
+
+        data[self.plannerName] = self.performanceMetrics
+
+        with open(self.exportDirectory, 'w+') as outfile:
+            json.dump(data, outfile)
+
+
+        
             

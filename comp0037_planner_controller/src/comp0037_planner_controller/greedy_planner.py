@@ -10,6 +10,7 @@ class GreedyPlanner(CellBasedForwardSearch):
     # Construct the new planner object
     def __init__(self, title, occupancyGrid):
         CellBasedForwardSearch.__init__(self, title, occupancyGrid)
+        self.plannerName = "Greedy Planner"
         self.greedyQueue = PriorityQueue()
 
     def compute_euclidean_distance(self, cell1, cell2):
@@ -26,6 +27,10 @@ class GreedyPlanner(CellBasedForwardSearch):
     # Check the queue size is zero
     def isQueueEmpty(self):
         return self.greedyQueue.empty()
+
+    # Return the length of the queue
+    def getQueueLength(self):
+        return self.greedyQueue.qsize()
 
     # Simply pull from the front of the list
     def popCellFromQueue(self):

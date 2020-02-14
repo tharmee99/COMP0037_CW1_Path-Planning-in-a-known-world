@@ -1,25 +1,25 @@
 #! /usr/bin/env python
 
 # Import the needed types.
-from comp0037_planner_controller.lifo_planner import LIFOPlanner
+from comp0037_planner_controller.aStar_planner import AStarPlanner
 from comp0037_planner_controller.occupancy_grid import OccupancyGrid
 import map_getter
 import rospy
 import sys
 
-#Initialise node
-rospy.init_node('lifo_standalone', anonymous=True)
+# Initialise node
+rospy.init_node('a_star_standalone', anonymous=True)
 
-#Mapgetter  helps load maps off the map server
+# Mapgetter  helps load maps off the map server
 mapGetter = map_getter.MapGetter()
-occupancyGrid=mapGetter.getMapFromServer()
+occupancyGrid = mapGetter.getMapFromServer()
 
 start = rospy.get_param("start_pose")
 goal = rospy.get_param("goal_pose")
 
 # Create the planner. The first field is the title which will appear in the
 # graphics window, the second the occupancy grid used.
-planner = LIFOPlanner('Depth First Search', occupancyGrid)
+planner = AStarPlanner('A* Planner', occupancyGrid, sys.argv[2])
 planner.exportDirectory = sys.argv[1]
 
 # This causes the planner to slow down and pause for things like key entries
