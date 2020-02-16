@@ -203,8 +203,9 @@ class GeneralForwardSearchAlgorithm(PlannerBase):
     # start cell.
 
     def getAngle(self, parentCell, cell):
-        del_y = parentCell.coords[1]-cell.coords[1]
-        del_x = parentCell.coords[0]-cell.coords[0]
+        
+        del_y = cell.coords[1]-parentCell.coords[1]
+        del_x = cell.coords[1]-parentCell.coords[0]
 
         angle = atan2(del_y,del_x) * (180/pi)
 
@@ -295,7 +296,7 @@ class GeneralForwardSearchAlgorithm(PlannerBase):
 
         if(not os.path.isfile(self.exportDirectory)):
             with open(self.exportDirectory, 'w+') as outfile:
-                json.dump(data, outfile)
+                json.dump(data, outfile, indent=4)
             pass
 
         with open(self.exportDirectory) as json_file:
@@ -304,7 +305,7 @@ class GeneralForwardSearchAlgorithm(PlannerBase):
         data[self.plannerName] = self.performanceMetrics
 
         with open(self.exportDirectory, 'w+') as outfile:
-            json.dump(data, outfile)
+            json.dump(data, outfile, indent=4)
 
 
         

@@ -74,6 +74,8 @@ class ControllerBase(object):
 
         rospy.loginfo('Driving path to goal with ' + str(len(path.waypoints)) + ' waypoint(s)')
         
+        startTime = time.time()
+
         # Drive to each waypoint in turn
         for waypointNumber in range(0, len(path.waypoints)):
             cell = path.waypoints[waypointNumber]
@@ -85,6 +87,10 @@ class ControllerBase(object):
                 break
 
         rospy.loginfo('Rotating to goal orientation (' + str(goalOrientation) + ')')
+        
+        endTime = time.time()
+
+        rospy.loginfo('Arrived in ' + str(endTime-startTime) + 's.')
         
         # Finish off by rotating the robot to the final configuration
         if rospy.is_shutdown() is False:

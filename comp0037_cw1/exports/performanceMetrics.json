@@ -1,1 +1,44 @@
-{"Dijkstra's": {"pathTravelCost": 64.74542235464152, "maximumLengthOfQueue": 199, "pathCardinality": 46, "totalAngleTurned": 90.0, "numberOfCellsVisited": 2738}, "Depth First (LIFO)": {"pathTravelCost": 423.4226827233806, "maximumLengthOfQueue": 1648, "pathCardinality": 256, "totalAngleTurned": 4185.0, "numberOfCellsVisited": 4255}, "Greedy Planner": {"pathTravelCost": 72.22370207410346, "maximumLengthOfQueue": 136, "pathCardinality": 46, "totalAngleTurned": 45.0, "numberOfCellsVisited": 180}, "A* Algorithm (Heuristic: 0)": {"pathTravelCost": 64.74542235464152, "maximumLengthOfQueue": 199, "pathCardinality": 46, "totalAngleTurned": 90.0, "numberOfCellsVisited": 2738}, "A* Algorithm (Heuristic: Euclidean)": {"pathTravelCost": 72.22370207410346, "maximumLengthOfQueue": 125, "pathCardinality": 46, "totalAngleTurned": 45.0, "numberOfCellsVisited": 1836}, "Breadth First (FIFO)": {"pathTravelCost": 84.07663534416047, "maximumLengthOfQueue": 109, "pathCardinality": 46, "totalAngleTurned": 90.0, "numberOfCellsVisited": 2917}}
+{
+    "Dijkstra's": {
+        "pathTravelCost": 64.74542235464152,
+        "maximumLengthOfQueue": 199,
+        "pathCardinality": 46,
+        "totalAngleTurned": 90.0,
+        "numberOfCellsVisited": 2738
+    },
+    "Depth First (LIFO)": {
+        "pathTravelCost": 1995.7641541065245,
+        "maximumLengthOfQueue": 878,
+        "pathCardinality": 523,
+        "totalAngleTurned": 10980.0,
+        "numberOfCellsVisited": 1523
+    },
+    "Greedy Planner": {
+        "pathTravelCost": 72.22370207410346,
+        "maximumLengthOfQueue": 136,
+        "pathCardinality": 46,
+        "totalAngleTurned": 45.0,
+        "numberOfCellsVisited": 180
+    },
+    "A* Algorithm (Heuristic: Euclidean)": {
+        "pathTravelCost": 72.22370207410346,
+        "maximumLengthOfQueue": 125,
+        "pathCardinality": 46,
+        "totalAngleTurned": 45.0,
+        "numberOfCellsVisited": 1836
+    },
+    "A* Algorithm (Heuristic: 0)": {
+        "pathTravelCost": 64.74542235464152,
+        "maximumLengthOfQueue": 199,
+        "pathCardinality": 46,
+        "totalAngleTurned": 90.0,
+        "numberOfCellsVisited": 2738
+    },
+    "Breadth First (FIFO)": {
+        "pathTravelCost": 84.07663534416047,
+        "maximumLengthOfQueue": 109,
+        "pathCardinality": 46,
+        "totalAngleTurned": 90.0,
+        "numberOfCellsVisited": 2917
+    }
+}
