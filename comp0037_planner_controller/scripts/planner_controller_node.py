@@ -115,8 +115,6 @@ class PlannerControllerNode(object):
         # Now drive it
         self.robotController.drivePathToGoal(path, goal.theta, self.planner.getPlannerDrawer())
 
-        print(self.robotController.distanceTravelled)
-        print("-----------------------------------------------------------------")
         return True
     
     def run(self):

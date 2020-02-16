@@ -41,6 +41,10 @@ class ControllerBase(object):
         # This is the rate at which we broadcast updates to the simulator in Hz.
         self.rate = rospy.Rate(10)
 
+        self.exportDirectory = ""
+
+        self.goalNo = 0
+
         self.pathMetrics = {
             "timeForPath" : None,
             "distancetravelled" : None,
@@ -78,8 +82,10 @@ class ControllerBase(object):
     # Drive to each waypoint in turn. Unfortunately we have to add
     # the planner drawer because we have to keep updating it to
     # make sure the graphics are redrawn properly.
-    def drivePathToGoal(self, path, goalOrientation, plannerDrawer):
+    def drivePathToGoal(self, path, goalOrientation, plannerDrawer, export=True):
         self.plannerDrawer = plannerDrawer
+
+        self.goalNo += 1
 
         rospy.loginfo('Driving path to goal with ' + str(len(path.waypoints)) + ' waypoint(s)')
         
@@ -100,23 +106,32 @@ class ControllerBase(object):
         endTime = time.time()
         self.pathMetrics["timeForPath"] = endTime-startTime
         
+
+
         # Finish off by rotating the robot to the final configuration
         if rospy.is_shutdown() is False:
             self.rotateToGoalOrientation(goalOrientation)
 
-    # def exportPathMetrics(self):
-    #     data = {}
+    def exportMetrics(self):
+        data = {}
 
-    #     if(not os.path.isfile(self.exportDirectory)):
-    #         with open(self.exportDirectory, 'w+') as outfile:
-    #             json.dump(data, outfile, indent=4)
-    #         pass
+        if not os.path.exists(os.path.split(self.exportDirectory)[0]):
+            os.makedirs(os.path.split(self.exportDirectory)[0])
 
-    #     with open(self.exportDirectory) as json_file:
-    #         data = json.load(json_file)
+        if(not os.path.isfile(self.exportDirectory)):
+            with open(self.exportDirectory, 'w+') as outfile:
+                json.dump(data, outfile, indent=4)
+            pass
+        
+        try:
+            with open(self.exportDirectory) as json_file:
+                data = json.load(json_file)
+        except ValueError:
+            json.dump(data, outfile, indent=4)
 
-    #     data[self.plannerName] = self.performanceMetrics
+        data[self.plannerName] = {}
+        data[self.plannerName][self.goalNo] = self.pathMetrics
 
-    #     with open(self.exportDirectory, 'w+') as outfile:
-    #         json.dump(data, outfile, indent=4)
+        with open(self.exportDirectory, 'w+') as outfile:
+            json.dump(data, outfile, indent=4)
  
