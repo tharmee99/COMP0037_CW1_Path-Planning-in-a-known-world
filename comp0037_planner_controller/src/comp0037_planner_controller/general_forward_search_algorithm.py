@@ -20,6 +20,7 @@ class GeneralForwardSearchAlgorithm(PlannerBase):
     def __init__(self, title, occupancyGrid):
         PlannerBase.__init__(self, title, occupancyGrid)
         self.exportDirectory = ""
+        self.mapName = ""
         self.plannerName = ""
         self.performanceMetrics = {
             "numberOfCellsVisited" : None,
@@ -302,7 +303,7 @@ class GeneralForwardSearchAlgorithm(PlannerBase):
         with open(self.exportDirectory) as json_file:
             data = json.load(json_file)
 
-        data[self.plannerName] = self.performanceMetrics
+        data[self.plannerName][self.mapName] = self.performanceMetrics
 
         with open(self.exportDirectory, 'w+') as outfile:
             json.dump(data, outfile, indent=4)

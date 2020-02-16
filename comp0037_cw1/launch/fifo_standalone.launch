@@ -4,7 +4,7 @@
   <rosparam command="load" file="$(find comp0037_resources)/maps/empty_poses.yaml" />
   <!--  -->
   <node pkg="map_server" name="map_server" type="map_server" args="$(arg map_file)"/>
-  <node pkg="comp0037_planner_controller" required="true" output='screen' name="fifo_standalone_node" type="fifo_standalone_node.py" args="$(find comp0037_cw1)/exports/performanceMetrics.json"/>
+  <node pkg="comp0037_planner_controller" required="true" output='screen' name="fifo_standalone_node" type="fifo_standalone_node.py" args="$(find comp0037_cw1)/exports/performanceMetrics.json $(arg map_file)"/>
 </launch>
 
   

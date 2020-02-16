@@ -6,6 +6,7 @@ from comp0037_planner_controller.occupancy_grid import OccupancyGrid
 import map_getter
 import rospy
 import sys
+import os
 
 # Initialise node
 rospy.init_node('a_star_standalone', anonymous=True)
@@ -19,7 +20,9 @@ goal = rospy.get_param("goal_pose")
 
 # Create the planner. The first field is the title which will appear in the
 # graphics window, the second the occupancy grid used.
-planner = AStarPlanner('A* Planner', occupancyGrid, sys.argv[2])
+planner = AStarPlanner('A* Planner', occupancyGrid, sys.argv[3])
+mapFile = os.path.basename(sys.argv[2])
+planner.mapName = os.path.splitext(mapFile)[0]
 planner.exportDirectory = sys.argv[1]
 
 # This causes the planner to slow down and pause for things like key entries
