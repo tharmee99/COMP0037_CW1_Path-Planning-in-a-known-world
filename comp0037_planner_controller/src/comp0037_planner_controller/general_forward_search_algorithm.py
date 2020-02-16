@@ -300,20 +300,22 @@ class GeneralForwardSearchAlgorithm(PlannerBase):
 
         if(not os.path.isfile(self.exportDirectory)):
             with open(self.exportDirectory, 'w+') as outfile:
-                json.dump(data, outfile, indent=4)
+                json.dump(data, outfile, sort_keys=True, indent=4)
             pass
         
         try:
             with open(self.exportDirectory) as json_file:
                 data = json.load(json_file)
         except ValueError:
-            json.dump(data, outfile, indent=4)
+            json.dump(data, outfile, sort_keys=True, indent=4)
 
-        data[self.plannerName] = {}
+        if data[self.plannerName] is None:
+            data[self.plannerName] = {}
+
         data[self.plannerName][self.mapName] = self.performanceMetrics
 
         with open(self.exportDirectory, 'w+') as outfile:
-            json.dump(data, outfile, indent=4)
+            json.dump(data, outfile, sort_keys=True, indent=4)
 
 
         

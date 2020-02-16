@@ -48,7 +48,8 @@ class ControllerBase(object):
         self.pathMetrics = {
             "timeForPath" : 0.0,
             "distanceTravelled" : 0.0,
-            "totalAngleTurned" : 0.0
+            "totalAngleTurned" : 0.0,
+            "plannerPerformance" : {}
         }
 
     # Get the pose of the robot. Store this in a Pose2D structure because
@@ -124,19 +125,20 @@ class ControllerBase(object):
             os.makedirs(os.path.split(self.exportDirectory)[0])
 
         if(not os.path.isfile(self.exportDirectory)):
-            with open(self.exportDirectory, 'w+') as outfile:
-                json.dump(data, outfile, indent=4)
-            pass
+            with open(self.exportDirectory, 'w+') as json_file:
+                json.dump(data, json_file, sort_keys=True, indent=4)
         
-        try:
-            with open(self.exportDirectory) as json_file:
+        with open(self.exportDirectory, 'w+') as json_file:
+            try:
                 data = json.load(json_file)
-        except ValueError:
-            json.dump(data, outfile, indent=4)
+            except ValueError:
+                json.dump(data, json_file, sort_keys=True, indent=4)
 
-        data[self.plannerName] = {}
+        if self.plannerName not in data:
+            data[self.plannerName] = {}
+
         data[self.plannerName][self.goalNo] = self.pathMetrics
 
-        with open(self.exportDirectory, 'w+') as outfile:
-            json.dump(data, outfile, indent=4)
+        with open(self.exportDirectory, 'w+') as json_file:
+            json.dump(data, json_file, sort_keys=True, indent=4)
  
