@@ -1,0 +1,9 @@
+{
+    "Breadth First (FIFO)": {
+        "1": {
+            "distanceTravelled": 27.916347579960334, 
+            "timeForPath": 187.10263419151306, 
+            "totalAngleTurned": 937.3443359123237
+        }
+    }
+}

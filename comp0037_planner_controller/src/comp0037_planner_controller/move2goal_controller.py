@@ -78,7 +78,7 @@ class Move2GoalController(ControllerBase):
             self.rate.sleep()
 
             self.pathMetrics["distanceTravelled"] += self.get_distance(startX,startY)
-            self.pathMetrics["totalAngleTurned"] += abs(self.shortestAngularDistance(startTheta, self.pose.theta))
+            self.pathMetrics["totalAngleTurned"] += abs(self.shortestAngularDistance(startTheta, self.pose.theta)) * (180/math.pi)
 
             distanceError = sqrt(pow((waypoint[0] - self.pose.x), 2) + pow((waypoint[1] - self.pose.y), 2))
             angleError = self.shortestAngularDistance(self.pose.theta,

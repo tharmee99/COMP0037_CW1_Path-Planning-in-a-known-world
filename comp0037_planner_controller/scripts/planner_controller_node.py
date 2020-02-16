@@ -58,6 +58,8 @@ class PlannerControllerNode(object):
         
     def createRobotController(self):
         self.robotController = Move2GoalController(self.occupancyGrid)
+        self.robotController.exportDirectory = sys.argv[1]
+        self.robotController.plannerName = self.planner.plannerName
 
     def handleDriveToGoal(self, goal):
         # Report to the main loop that we have a new goal

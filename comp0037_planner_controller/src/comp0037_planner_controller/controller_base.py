@@ -44,11 +44,11 @@ class ControllerBase(object):
         self.exportDirectory = ""
 
         self.goalNo = 0
-
+        self.plannerName = ""
         self.pathMetrics = {
-            "timeForPath" : None,
-            "distancetravelled" : None,
-            "totalAngleTurned" : None
+            "timeForPath" : 0.0,
+            "distanceTravelled" : 0.0,
+            "totalAngleTurned" : 0.0
         }
 
     # Get the pose of the robot. Store this in a Pose2D structure because
@@ -87,6 +87,10 @@ class ControllerBase(object):
 
         self.goalNo += 1
 
+        self.pathMetrics["timeForPath"] = 0.0
+        self.pathMetrics["distanceTravelled"] = 0.0
+        self.pathMetrics["totalAngleTurned"] = 0.0
+
         rospy.loginfo('Driving path to goal with ' + str(len(path.waypoints)) + ' waypoint(s)')
         
         startTime = time.time()
@@ -106,13 +110,14 @@ class ControllerBase(object):
         endTime = time.time()
         self.pathMetrics["timeForPath"] = endTime-startTime
         
-
+        if(export):
+            self.exportPathMetrics()
 
         # Finish off by rotating the robot to the final configuration
         if rospy.is_shutdown() is False:
             self.rotateToGoalOrientation(goalOrientation)
 
-    def exportMetrics(self):
+    def exportPathMetrics(self):
         data = {}
 
         if not os.path.exists(os.path.split(self.exportDirectory)[0]):
