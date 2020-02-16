@@ -8,6 +8,9 @@ from math import pow,atan2,sqrt,pi
 from planned_path import PlannedPath
 import time
 import math
+import os
+import json
+
 
 # This is the base class of the controller which moves the robot to its goal.
 
@@ -37,6 +40,12 @@ class ControllerBase(object):
         
         # This is the rate at which we broadcast updates to the simulator in Hz.
         self.rate = rospy.Rate(10)
+
+        self.pathMetrics = {
+            "timeForPath" : None,
+            "distancetravelled" : None,
+            "totalAngleTurned" : None
+        }
 
     # Get the pose of the robot. Store this in a Pose2D structure because
     # this is easy to use. Use radians for angles because these are used
@@ -89,10 +98,25 @@ class ControllerBase(object):
         rospy.loginfo('Rotating to goal orientation (' + str(goalOrientation) + ')')
         
         endTime = time.time()
-
-        rospy.loginfo('Arrived in ' + str(endTime-startTime) + 's.')
+        self.pathMetrics["timeForPath"] = endTime-startTime
         
         # Finish off by rotating the robot to the final configuration
         if rospy.is_shutdown() is False:
             self.rotateToGoalOrientation(goalOrientation)
+
+    # def exportPathMetrics(self):
+    #     data = {}
+
+    #     if(not os.path.isfile(self.exportDirectory)):
+    #         with open(self.exportDirectory, 'w+') as outfile:
+    #             json.dump(data, outfile, indent=4)
+    #         pass
+
+    #     with open(self.exportDirectory) as json_file:
+    #         data = json.load(json_file)
+
+    #     data[self.plannerName] = self.performanceMetrics
+
+    #     with open(self.exportDirectory, 'w+') as outfile:
+    #         json.dump(data, outfile, indent=4)
  

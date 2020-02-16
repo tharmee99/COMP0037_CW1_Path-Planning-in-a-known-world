@@ -17,8 +17,6 @@ class Move2GoalController(ControllerBase):
 
     def __init__(self, occupancyGrid):
         ControllerBase.__init__(self, occupancyGrid)
-        
-        self.distanceTravelled = 0
 
         # Get the proportional gain settings
         self.distanceErrorGain = rospy.get_param('distance_error_gain', 1)
@@ -58,6 +56,8 @@ class Move2GoalController(ControllerBase):
             startX = self.pose.x
             startY = self.pose.y
             
+            startTheta = self.pose.theta
+
             if math.fabs(angleError) < self.driveAngleErrorTolerance:
                 vel_msg.linear.x = max(0.0, min(self.distanceErrorGain * distanceError, 10.0))
                 vel_msg.linear.y = 0
@@ -77,7 +77,8 @@ class Move2GoalController(ControllerBase):
                 
             self.rate.sleep()
 
-            self.distanceTravelled += self.get_distance(startX,startY)
+            self.pathMetrics["distanceTravelled"] += self.get_distance(startX,startY)
+            self.pathMetrics["totalAngleTurned"] += abs(self.shortestAngularDistance(startTheta, self.pose.theta))
 
             distanceError = sqrt(pow((waypoint[0] - self.pose.x), 2) + pow((waypoint[1] - self.pose.y), 2))
             angleError = self.shortestAngularDistance(self.pose.theta,
