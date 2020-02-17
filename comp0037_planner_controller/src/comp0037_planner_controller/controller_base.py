@@ -11,7 +11,6 @@ import math
 import os
 import csv
 
-
 # This is the base class of the controller which moves the robot to its goal.
 
 class ControllerBase(object):
@@ -124,47 +123,43 @@ class ControllerBase(object):
         column_headers = ['PlanningAlgorithm','goalNumber','distanceTravelled','totalAngleTurned','timeForPath',
                           'plannerQueueLength','plannerCellsVisited','plannerPathCardinality','plannerPathCost','plannerAngleTurned']
         
-        data = {
-            'PlanningAlgorithm' : self.plannerName,
-            'goalNumber' : self.goal,
-            'distanceTravelled' : self.pathMetrics['distanceTravelled'],
-            'totalAngleTurned': self.pathMetrics['totalAngleTurned'],
-            'timeForPath' : self.pathMetrics['timeForPath'],
-            'plannerQueueLength' : self.pathMetrics.plannerPerformance['maximumLengthOfQueue'],
-            'plannerCellsVisited' : self.pathMetrics.plannerPerformance['numberOfCellsVisited'],
-            'plannerPathCardinality' : self.pathMetrics.plannerPerformance['pathCardinality'],
-            'plannerPathCost' : self.pathMetrics.plannerPerformance['pathTravelCost'],
-            'plannerAngleTurned' : self.pathMetrics.plannerPerformance['totalAngleTurned']
-        }
+        data = [self.plannerName, self.goal, self.pathMetrics['distanceTravelled'], self.pathMetrics['totalAngleTurned'], self.pathMetrics['timeForPath'],
+                self.pathMetrics.plannerPerformance['maximumLengthOfQueue'], self.pathMetrics.plannerPerformance['numberOfCellsVisited'], 
+                self.pathMetrics.plannerPerformance['pathCardinality'], self.pathMetrics.plannerPerformance['pathTravelCost'], self.pathMetrics.plannerPerformance['totalAngleTurned']
+               ]
 
         if not os.path.exists(os.path.split(self.exportDirectory)[0]):
             os.makedirs(os.path.split(self.exportDirectory)[0])
 
+        isFileEmpty = (os.stat(csv_file).st_size == 0)
         rowList=[]
         rowFound=False
-        with open(self.exportDirectory, 'a+', newline='') as csvfile:
-            # Instanstiate writer
-            writer = csv.DictWriter(csvfile, fieldnames=column_headers)
-            # If file is empty, write header
-            if(os.stat(self.exportDirectory).st_size > 0):
-                writer.writeheader()
-            else:
-                # Instantiate reader
-                reader = csv.DictReader(csvfile)
-                # Find if row already exists for that planner
-                for row in reader:
-                    if(row['PlanningAlgorithm']==self.plannerName):
-                        rowFound=True
-                    else:
-                        rowList.append(row)
+
+        if isFileEmpty:
+            with open(self.exportDirectory, 'w', newline='') as write_csvfile:
+                # Instanstiate writer
+                writer = csv.writer(write_csvfile)
+                writer.writerow(column_headers)
+                rowList.append(data)
+        else:
+            with open(self.exportDirectory, 'r', newline='') as read_csvfile:
+                    # Instantiate reader
+                    reader = csv.reader(read_csvfile)
+                    # Find if row already exists for that planner
+                    for row in reader:
+                        if(row[0]==self.plannerName):
+                            rowFound=True
+                        else:
+                            rowList.append(row)
             # If row was not found then append file.          
             if(not rowFound):
-                writer.writerow(data)
-        # If row was found then rewrite the whole file without the old row
-        if(rowFound):
-            with open(self.exportDirectory, 'w', newline='') as csv:
-                rowList.append(data)
-                writer = csv.DictWriter(csvfile, fieldnames=column_headers)
-                for row in rowList:
-                    writer.writerow(row)
-            
+                with open(self.exportDirectory, 'a', newline='') as write_csvfile:
+                    writer = csv.writer(write_csvfile)
+                    writer.writerow(data)
+            # If row was found then rewrite the whole file without the old row
+            else:
+                with open(self.exportDirectory, 'w', newline='') as write_csvfile:
+                    rowList.append(data)
+                    writer = csv.writer(write_csvfile)
+                    for row in rowList:
+                        writer.writerow(row)
