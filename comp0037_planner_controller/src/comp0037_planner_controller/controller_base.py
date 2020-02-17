@@ -140,11 +140,31 @@ class ControllerBase(object):
         if not os.path.exists(os.path.split(self.exportDirectory)[0]):
             os.makedirs(os.path.split(self.exportDirectory)[0])
 
-        with open(self.exportDirectory, 'a', newline='') as csvfile:
+        rowList=[]
+        rowFound=False
+        with open(self.exportDirectory, 'a+', newline='') as csvfile:
             # Instanstiate writer
             writer = csv.DictWriter(csvfile, fieldnames=column_headers)
             # If file is empty, write header
             if(os.stat(self.exportDirectory).st_size > 0):
                 writer.writeheader()
-            writer.writerow(data)
+            else:
+                # Instantiate reader
+                reader = csv.DictReader(csvfile)
+                # Find if row already exists for that planner
+                for row in reader:
+                    if(row['PlanningAlgorithm']==self.plannerName):
+                        rowFound=True
+                    else:
+                        rowList.append(row)
+            # If row was not found then append file.          
+            if(not rowFound):
+                writer.writerow(data)
+        # If row was found then rewrite the whole file without the old row
+        if(rowFound):
+            with open(self.exportDirectory, 'w', newline='') as csv:
+                rowList.append(data)
+                writer = csv.DictWriter(csvfile, fieldnames=column_headers)
+                for row in rowList:
+                    writer.writerow(row)
             
