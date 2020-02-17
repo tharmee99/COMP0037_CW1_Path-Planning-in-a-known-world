@@ -7,7 +7,7 @@
   <!-- Scenario -->
   <arg name="map_file" default="$(find comp0037_resources)/maps/factory.yaml"/>
   <arg name="goal_file" default="$(find comp0037_resources)/maps/factory_goals.txt"/>
-  <arg name="export_file" default="$(find comp0037_cw1)/exports/pathMetrics.json"/>
+  <arg name="export_file" default="$(find comp0037_cw1)/exports/pathMetrics.csv"/>
   <arg name="planner" default="fifo"/> 
   <arg name="heuristic" default="0"/> 
 
