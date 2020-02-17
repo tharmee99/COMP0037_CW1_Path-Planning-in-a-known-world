@@ -1,0 +1,2 @@
+PlanningAlgorithm,goalNumber,distanceTravelled,totalAngleTurned,timeForPath,plannerQueueLength,plannerCellsVisited,plannerPathCardinality,plannerPathCost,plannerAngleTurned
+Breadth First (FIFO),1,1.4242686909927353,493.08644874774035,11.903430938720703,38,105,5,6.371992366959072,0.039297510650698086
