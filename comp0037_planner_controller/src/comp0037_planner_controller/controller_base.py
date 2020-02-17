@@ -9,7 +9,7 @@ from planned_path import PlannedPath
 import time
 import math
 import os
-import json
+import csv
 
 
 # This is the base class of the controller which moves the robot to its goal.
@@ -121,24 +121,30 @@ class ControllerBase(object):
     def exportPathMetrics(self):
         data = {}
 
+        column_headers = ['PlanningAlgorithm','goalNumber','distanceTravelled','totalAngleTurned','timeForPath',
+                          'plannerQueueLength','plannerCellsVisited','plannerPathCardinality','plannerPathCost','plannerAngleTurned']
+        
+        data = {
+            'PlanningAlgorithm' : self.plannerName,
+            'goalNumber' : self.goal,
+            'distanceTravelled' : self.pathMetrics['distanceTravelled'],
+            'totalAngleTurned': self.pathMetrics['totalAngleTurned'],
+            'timeForPath' : self.pathMetrics['timeForPath'],
+            'plannerQueueLength' : self.pathMetrics.plannerPerformance['maximumLengthOfQueue'],
+            'plannerCellsVisited' : self.pathMetrics.plannerPerformance['numberOfCellsVisited'],
+            'plannerPathCardinality' : self.pathMetrics.plannerPerformance['pathCardinality'],
+            'plannerPathCost' : self.pathMetrics.plannerPerformance['pathTravelCost'],
+            'plannerAngleTurned' : self.pathMetrics.plannerPerformance['totalAngleTurned']
+        }
+
         if not os.path.exists(os.path.split(self.exportDirectory)[0]):
             os.makedirs(os.path.split(self.exportDirectory)[0])
 
-        if(not os.path.isfile(self.exportDirectory)):
-            with open(self.exportDirectory, 'w+') as json_file:
-                json.dump(data, json_file, sort_keys=True, indent=4)
-        
-        with open(self.exportDirectory, 'w+') as json_file:
-            try:
-                data = json.load(json_file)
-            except ValueError:
-                json.dump(data, json_file, sort_keys=True, indent=4)
-
-        if self.plannerName not in data:
-            data[self.plannerName] = {}
-
-        data[self.plannerName][self.goalNo] = self.pathMetrics
-
-        with open(self.exportDirectory, 'w+') as json_file:
-            json.dump(data, json_file, sort_keys=True, indent=4)
- 
+        with open(self.exportDirectory, 'a', newline='') as csvfile:
+            # Instanstiate writer
+            writer = csv.DictWriter(csvfile, fieldnames=column_headers)
+            # If file is empty, write header
+            if(os.stat(self.exportDirectory).st_size > 0):
+                writer.writeheader()
+            writer.writerow(data)
+            
