@@ -4,6 +4,7 @@ from dynamic_planner import DynamicPlanner
 from Queue import PriorityQueue
 
 from math import sqrt
+import random
 
 heurstic_list = ["constant", "euclidean", "octile", "manhattan"]
 
@@ -21,7 +22,7 @@ class AStarPlanner(DynamicPlanner):
 
     def calc_heuristics(self, cell, parentCell):
         if(self.heuristics.lower() == heurstic_list[0]):
-            return 5
+            return random.randrange(parentCell.pathCost)
 
         elif(self.heuristics.lower() == heurstic_list[1]):
             del_x = cell.coords[0] - self.goal.coords[0]
