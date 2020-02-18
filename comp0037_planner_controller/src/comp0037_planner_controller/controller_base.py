@@ -117,9 +117,7 @@ class ControllerBase(object):
         if rospy.is_shutdown() is False:
             self.rotateToGoalOrientation(goalOrientation)
 
-    def exportPathMetrics(self):
-        data = {}
-        
+    def exportPathMetrics(self):        
         column_headers = ['PlanningAlgorithm','goalNumber','distanceTravelled','totalAngleTurned','timeForPath',
                           'plannerQueueLength','plannerCellsVisited','plannerPathCardinality','plannerPathCost','plannerAngleTurned']
         
@@ -129,14 +127,16 @@ class ControllerBase(object):
                 self.pathMetrics['plannerPerformance']['totalAngleTurned']
                ]
 
+        # If directory doesn't exist create directory
         if not os.path.exists(os.path.split(self.exportDirectory)[0]):
             os.makedirs(os.path.split(self.exportDirectory)[0])
         
+        # If file doesn't exist create file
         if(os.path.isfile(self.exportDirectory)):
             isFileEmpty = (os.stat(self.exportDirectory).st_size == 0)
         else:
             isFileEmpty = True
-
+        
         rowList=[]
         rowFound=False
 
@@ -151,8 +151,13 @@ class ControllerBase(object):
                     # Instantiate reader
                     reader = csv.reader(read_csvfile)
                     # Find if row already exists for that planner
+
                     for row in reader:
-                        if(row[0]==self.plannerName and row[1]==self.goalNo):
+                        print("----------------------------------------------------------------------")
+                        print(type(row[1]))
+                        print(type(self.goalNo))
+
+                        if(str(row[0])==str(self.plannerName) and str(row[1])==str(self.goalNo)):
                             rowFound=True
                         else:
                             rowList.append(row)
