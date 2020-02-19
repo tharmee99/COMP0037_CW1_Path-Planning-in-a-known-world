@@ -7,11 +7,14 @@
   <!-- Scenario -->
   <arg name="map_file" default="$(find comp0037_resources)/maps/factory_terrain.yaml"/>
   <arg name="goal_file" default="$(find comp0037_resources)/maps/factory_goals.txt"/>
+  <arg name="export_file" default="$(find comp0037_cw1)/exports/TerrainPathMetrics.csv"/>
+  <arg name="planner" default="fifo"/> 
+  <arg name="heuristic" default="0"/> 
 
   <node pkg="comp0037_time_server" name="time_server" type="time_server_node.py"/>
   <node pkg="comp0037_the_boss" name="the_boss" type="boss_node.py" args="$(arg goal_file)" output="screen"/>
-  <node pkg="comp0037_planner_controller" name="planner_controller" type="planner_controller_node.py" output="screen"/>
-
+  <node pkg="comp0037_planner_controller" name="planner_controller" type="planner_controller_node.py" output="screen" args="$(arg export_file) $(arg planner) $(arg heuristic)"/>
+  
   <include file="$(find stdr_robot)/launch/robot_manager.launch" />
   <include file="$(find stdr_gui)/launch/stdr_gui.launch"/>
 

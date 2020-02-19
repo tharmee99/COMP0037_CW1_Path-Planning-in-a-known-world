@@ -10,6 +10,7 @@ from math import *
 import json
 import rospy
 import os.path
+import csv
 
 class GeneralForwardSearchAlgorithm(PlannerBase):
 
@@ -292,30 +293,59 @@ class GeneralForwardSearchAlgorithm(PlannerBase):
        
         return path
 
-    def exportMetrics(self):
-        data = {}
+    def exportMetrics(self):        
+        column_headers = ['PlanningAlgorithm','mapName','numberOfCellsVisited',
+                            'maximumLengthOfQueue','totalAngleTurned',
+                            'pathTravelCost','pathCardinality']
+        
+        data = [self.plannerName, self.mapName, self.performanceMetrics['numberOfCellsVisited'],
+                self.performanceMetrics['maximumLengthOfQueue'], self.performanceMetrics['totalAngleTurned'],
+                self.performanceMetrics['pathTravelCost'], self.performanceMetrics['pathCardinality']]
 
+        # If directory doesn't exist create directory
         if not os.path.exists(os.path.split(self.exportDirectory)[0]):
             os.makedirs(os.path.split(self.exportDirectory)[0])
-
-        if(not os.path.isfile(self.exportDirectory)):
-            with open(self.exportDirectory, 'w+') as outfile:
-                json.dump(data, outfile, sort_keys=True, indent=4)
-            pass
         
-        try:
-            with open(self.exportDirectory) as json_file:
-                data = json.load(json_file)
-        except ValueError:
-            json.dump(data, outfile, sort_keys=True, indent=4)
+        # If file doesn't exist create file
+        if(os.path.isfile(self.exportDirectory)):
+            isFileEmpty = (os.stat(self.exportDirectory).st_size == 0)
+        else:
+            isFileEmpty = True
+        
+        print(self.mapName)
 
-        if data[self.plannerName] is None:
-            data[self.plannerName] = {}
+        rowList=[]
+        rowFound=False
 
-        data[self.plannerName][self.mapName] = self.performanceMetrics
+        if isFileEmpty:
+            with open(self.exportDirectory, 'w') as write_csvfile:
+                # Instanstiate writer
+                writer = csv.writer(write_csvfile)
+                writer.writerow(column_headers)
+                writer.writerow(data)
+        else:
+            with open(self.exportDirectory, 'r') as read_csvfile:
+                    # Instantiate reader
+                    reader = csv.reader(read_csvfile)
+                    # Find if row already exists for that planner
 
-        with open(self.exportDirectory, 'w+') as outfile:
-            json.dump(data, outfile, sort_keys=True, indent=4)
+                    for row in reader:
+                        if(str(row[0])==str(self.plannerName) and str(row[1])==str(self.mapName)):
+                            rowFound=True
+                        else:
+                            rowList.append(row)
+            # If row was not found then append file.          
+            if(not rowFound):
+                with open(self.exportDirectory, 'a') as write_csvfile:
+                    writer = csv.writer(write_csvfile)
+                    writer.writerow(data)
+            # If row was found then rewrite the whole file without the old row
+            else:
+                with open(self.exportDirectory, 'w') as write_csvfile:
+                    rowList.append(data)
+                    writer = csv.writer(write_csvfile)
+                    for row in rowList:
+                        writer.writerow(row)
 
 
         

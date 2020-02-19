@@ -1,0 +1,5 @@
+PlanningAlgorithm,mapName,numberOfCellsVisited,maximumLengthOfQueue,totalAngleTurned,pathTravelCost,pathCardinality
+Breadth First (FIFO),empty_terrain,2917,109,180.91714331600295,84.07663534416047,46
+Depth First (LIFO),square_terrain,1523,878,1659.670972219878,1995.7641541065245,523
+Dijkstra's,empty_terrain,2738,199,179.99999999999997,64.74542235464152,46
+A* Algorithm (Heuristic: 0),empty_terrain,2738,199,179.99999999999997,64.74542235464152,46

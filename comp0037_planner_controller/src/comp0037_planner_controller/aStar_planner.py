@@ -22,7 +22,7 @@ class AStarPlanner(DynamicPlanner):
 
     def calc_heuristics(self, cell, parentCell):
         if(self.heuristics.lower() == heurstic_list[0]):
-            return random.randrange(parentCell.pathCost)
+            return random.randrange(parentCell.pathCost + 1)
 
         elif(self.heuristics.lower() == heurstic_list[1]):
             del_x = cell.coords[0] - self.goal.coords[0]
