@@ -42,6 +42,8 @@ class ControllerBase(object):
 
         self.exportDirectory = ""
 
+        self.simulationTimeScaleFactor = rospy.get_param('time_scale_factor')
+
         self.goalNo = 0
         self.plannerName = ""
         self.pathMetrics = {
@@ -95,6 +97,9 @@ class ControllerBase(object):
         
         startTime = time.time()
 
+        print("------------------------------------------------------------------")
+        print(self.simulationTimeScaleFactor)
+
         # Drive to each waypoint in turn
         for waypointNumber in range(0, len(path.waypoints)):
             cell = path.waypoints[waypointNumber]
@@ -108,7 +113,7 @@ class ControllerBase(object):
         rospy.loginfo('Rotating to goal orientation (' + str(goalOrientation) + ')')
         
         endTime = time.time()
-        self.pathMetrics["timeForPath"] = endTime-startTime
+        self.pathMetrics["timeForPath"] = (endTime-startTime)/(self.simulationTimeScaleFactor)
         
         if(export):
             self.exportPathMetrics()
@@ -153,10 +158,6 @@ class ControllerBase(object):
                     # Find if row already exists for that planner
 
                     for row in reader:
-                        print("----------------------------------------------------------------------")
-                        print(type(row[1]))
-                        print(type(self.goalNo))
-
                         if(str(row[0])==str(self.plannerName) and str(row[1])==str(self.goalNo)):
                             rowFound=True
                         else:
