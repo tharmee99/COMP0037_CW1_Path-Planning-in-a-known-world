@@ -311,9 +311,7 @@ class GeneralForwardSearchAlgorithm(PlannerBase):
             isFileEmpty = (os.stat(self.exportDirectory).st_size == 0)
         else:
             isFileEmpty = True
-        
-        print(self.mapName)
-
+            
         rowList=[]
         rowFound=False
 

@@ -13,16 +13,27 @@ class AStarPlanner(DynamicPlanner):
     # Construct the new planner object
     def __init__(self, title, occupancyGrid, heuristic):
         DynamicPlanner.__init__(self, title, occupancyGrid)
-        
+
+        # random.seed(42)
+        # self.nonZeroConstant = random.randrange(parentCell.pathCost + 1)
+
+        self.nonZeroConstant = 20
+
         if(heuristic.lower() not in heurstic_list):
             heuristic = "0"
         
-        self.plannerName = 'A* Algorithm (Heuristic: {})'.format(heuristic.capitalize())
+        if(heuristic.lower() == heurstic_list[0]):
+            self.plannerName = 'A* Algorithm (Heuristic: {} = {})'.format(heuristic.capitalize(), self.nonZeroConstant)
+        else:
+            self.plannerName = 'A* Algorithm (Heuristic: {})'.format(heuristic.capitalize())
+
         self.heuristics = heuristic.lower()
+
+        
 
     def calc_heuristics(self, cell, parentCell):
         if(self.heuristics.lower() == heurstic_list[0]):
-            return random.randrange(parentCell.pathCost + 1)
+            return self.nonZeroConstant
 
         elif(self.heuristics.lower() == heurstic_list[1]):
             del_x = cell.coords[0] - self.goal.coords[0]
