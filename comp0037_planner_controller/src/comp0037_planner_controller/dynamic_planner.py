@@ -12,7 +12,7 @@ class DynamicPlanner(CellBasedForwardSearch):
         CellBasedForwardSearch.__init__(self, title, occupancyGrid)
         self.plannerQueue = PriorityQueue()
     
-    def calc_heuristics(self, cell, parentCell):
+    def calc_heuristics(self, cell):
         raise NotImplementedError()
 
     # Simply put on the end of the queue    
