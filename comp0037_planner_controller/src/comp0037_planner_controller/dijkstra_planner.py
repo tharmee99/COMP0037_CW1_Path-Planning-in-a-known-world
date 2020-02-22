@@ -12,5 +12,5 @@ class DijkstraPlanner(DynamicPlanner):
         DynamicPlanner.__init__(self, title, occupancyGrid)
         self.plannerName = "Dijkstra's"
 
-    def calc_heuristics(self, cell, parentCell):
+    def calc_heuristics(self, cell):
         return 0

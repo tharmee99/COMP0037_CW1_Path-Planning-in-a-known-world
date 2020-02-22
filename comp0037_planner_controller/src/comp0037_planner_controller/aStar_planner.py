@@ -17,7 +17,7 @@ class AStarPlanner(DynamicPlanner):
         # random.seed(42)
         # self.nonZeroConstant = random.randrange(parentCell.pathCost + 1)
 
-        self.nonZeroConstant = 20
+        self.nonZeroConstant = 1
 
         if(heuristic.lower() not in heurstic_list):
             heuristic = "0"
@@ -31,7 +31,7 @@ class AStarPlanner(DynamicPlanner):
 
         
 
-    def calc_heuristics(self, cell, parentCell):
+    def calc_heuristics(self, cell):
         if(self.heuristics.lower() == heurstic_list[0]):
             return self.nonZeroConstant
 

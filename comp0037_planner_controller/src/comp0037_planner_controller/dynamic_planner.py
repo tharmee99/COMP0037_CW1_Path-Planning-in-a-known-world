@@ -12,14 +12,17 @@ class DynamicPlanner(CellBasedForwardSearch):
         CellBasedForwardSearch.__init__(self, title, occupancyGrid)
         self.plannerQueue = PriorityQueue()
     
-    def calc_heuristics(self, cell, parentCell):
+    def calc_heuristics(self, cell):
         raise NotImplementedError()
 
     # Simply put on the end of the queue    
     def pushCellOntoQueue(self, cell):
         if cell != self.start:
-            cell.pathCost = cell.parent.pathCost + self.computeLStageAdditiveCost(cell.parent, cell) + self.calc_heuristics(cell, cell.parent)
-        self.plannerQueue.put((cell.pathCost, cell))
+            cell.pathCost = cell.parent.pathCost + self.computeLStageAdditiveCost(cell.parent, cell)
+        
+        priorityValue = cell.pathCost + self.calc_heuristics(cell)
+
+        self.plannerQueue.put((priorityValue, cell))
 
     # Check the queue size is zero
     def isQueueEmpty(self):
@@ -35,9 +38,12 @@ class DynamicPlanner(CellBasedForwardSearch):
         return cell
 
     def resolveDuplicate(self, cell, parentCell):
-        newPathCost = parentCell.pathCost + self.computeLStageAdditiveCost(parentCell, cell) + self.calc_heuristics(cell, parentCell)
+        newPathCost = parentCell.pathCost + self.computeLStageAdditiveCost(parentCell, cell)
 
         if(newPathCost < cell.pathCost):
             cell.parent = parentCell
             cell.pathCost = newPathCost
-            self.plannerQueue.put((newPathCost, cell))
+
+            priorityValue = newPathCost + self.calc_heuristics(cell)
+
+            self.plannerQueue.put((priorityValue, cell))
