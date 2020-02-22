@@ -1,3 +1,6 @@
+clear all
+
+% Setting up directory variables for reading exported data
 mydir = pwd;
 idcs = strfind(mydir,filesep);
 newdir = mydir(1:idcs(end)-1);
@@ -5,32 +8,26 @@ newdir = mydir(1:idcs(end)-1);
 folder = filesep + "exports";
 newdir = newdir + folder;
 
-
 filename = filesep + "performanceMetrics.csv";
 file_dir = newdir + filename;
 
-% opts = detectImportOptions(file_dir);
-
-
-
+% Reading data into a table
 M = readtable(file_dir);
 
+% Column Headings (Metric names)
 columns = M.Properties.VariableNames(3:end);
 
+% Planner names and alternate names for use in plot
 planners = unique(M.PlanningAlgorithm);
 alt_planners = ["A*:0", "A*:1", "A*:20", "A*:5", "A*:Euclidean", "A*:manhattan", "A*:Octile", "FIFO", "LIFO", "Dijkstra's", "Greedy"];
 
+% Map names
 maps = unique(M.mapName);
 
-% for map_num = 1:length(maps)
-%     for planner_num = 1:length(planners)
-%         
-%     end
-% end
-
+% Initializing empty data matrix (each metric for each map and planner)
 data = zeros(length(maps), length(planners), length(columns));
 
-% map = maps(1);
+% Iterating through the table to write data into matrix
 for map_num = 1:length(maps)
     for planner_num = 1:length(planners)
         for row_num = 1:length(M.PlanningAlgorithm)
@@ -46,6 +43,7 @@ for map_num = 1:length(maps)
     end
 end
 
+% Plotting and saving each plot
 for map_num = 1:length(maps)
     for col_num = 1:length(columns)
         data_to_plot = data(map_num, :, col_num);
