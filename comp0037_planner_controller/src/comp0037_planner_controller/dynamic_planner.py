@@ -5,6 +5,8 @@ from Queue import PriorityQueue
 
 from math import sqrt
 
+# Implementation of the Dynamic Planner Algorithm which the Dijkstra and A* Algorithm inherit
+
 class DynamicPlanner(CellBasedForwardSearch):
 
     # Construct the new planner object
