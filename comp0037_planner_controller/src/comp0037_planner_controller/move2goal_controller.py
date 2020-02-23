@@ -27,7 +27,6 @@ class Move2GoalController(ControllerBase):
         self.driveAngleErrorTolerance = math.radians(rospy.get_param('angle_error_tolerance', 1))
         self.logData = True
 
-    
     def get_distance(self, goal_x, goal_y):
         distance = sqrt(pow((goal_x - self.pose.x), 2) + pow((goal_y - self.pose.y), 2))
         return distance
