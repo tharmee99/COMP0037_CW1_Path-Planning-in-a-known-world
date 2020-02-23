@@ -19,10 +19,13 @@ class Move2GoalController(ControllerBase):
         ControllerBase.__init__(self, occupancyGrid)
 
         # Get the proportional gain settings
-        self.distanceErrorGain = rospy.get_param('distance_error_gain', 1)
-        self.angleErrorGain = rospy.get_param('angle_error_gain', 4)
+        # self.distanceErrorGain = rospy.get_param('distance_error_gain', 1)
+        # self.angleErrorGain = rospy.get_param('angle_error_gain', 4)
+        self.controllerVariables["distanceErrorGain"] = rospy.get_param('distance_gain', {'Kp':1,'Ki':0,'kd':0})
+        self.controllerVariables["angleErrorGain"] = rospy.get_param('angle_gain', {'Kp':4,'Ki':0,'kd':0})
 
         self.driveAngleErrorTolerance = math.radians(rospy.get_param('angle_error_tolerance', 1))
+
     
     def get_distance(self, goal_x, goal_y):
         distance = sqrt(pow((goal_x - self.pose.x), 2) + pow((goal_y - self.pose.y), 2))

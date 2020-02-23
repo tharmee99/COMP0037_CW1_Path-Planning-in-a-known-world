@@ -27,8 +27,10 @@ class ControllerBase(object):
         # distance from the target within which the robot is assumed
         # to be there. The second is the angle. The latter is turned
         # into radians for ease of the controller.
+
         self.distanceErrorTolerance = rospy.get_param('distance_error_tolerance', 0.05)
         self.goalAngleErrorTolerance = math.radians(rospy.get_param('goal_angle_error_tolerance', 0.1))
+        
 
         # Set the pose to an initial value to stop things crashing
         self.pose = Pose2D()
@@ -41,6 +43,13 @@ class ControllerBase(object):
         self.rate = rospy.Rate(10)
 
         self.exportDirectory = ""
+        
+        self.controllerVariables = {
+            "distanceErrorGain" : {},
+            "angleErrorGain" : {},
+            "prevError" : 0,
+            "errorIntegral" : 0
+        }
 
         self.simulationTimeScaleFactor = rospy.get_param('time_scale_factor')
 
@@ -52,6 +61,24 @@ class ControllerBase(object):
             "totalAngleTurned" : 0.0,
             "plannerPerformance" : {}
         }
+
+    def pid_controller(error, delta_t=0.1, controller_gains):
+        # Proportional term
+        P = controller_gains['Kp'] * error
+
+        # Integral term
+        integral_term = self.controllerVariables['errorIntegral'] + (error * delta_t)
+        I = controller_gains['Ki'] * integral_term
+
+        # Derivative term
+        derivative_term = ((error-self.controllerVariables['prevError'])/delta_t)
+        D = controller_gains['Kd'] * derivative_term
+
+        # Update the values in controllerVariables
+        self.controllerVariables['prevError'] = error
+        self.controllerVariables['errorIntegral'] = integral_term
+
+        return (P + I + D)
 
     # Get the pose of the robot. Store this in a Pose2D structure because
     # this is easy to use. Use radians for angles because these are used
