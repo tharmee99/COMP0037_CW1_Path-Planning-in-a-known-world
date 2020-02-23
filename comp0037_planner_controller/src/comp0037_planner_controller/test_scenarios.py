@@ -50,4 +50,3 @@ def verticalWallScenarioHard():
     start, goal, occupancyGrid = verticalWallScenarioEasy()
     occupancyGrid.setCell(11,0,1)
     return start, goal, occupancyGrid
-
