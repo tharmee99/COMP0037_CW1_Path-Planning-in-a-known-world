@@ -62,16 +62,22 @@ class ControllerBase(object):
             "plannerPerformance" : {}
         }
 
-    def pid_controller(error, delta_t=0.1, controller_gains):
+    def pid_controller(self, error, controller_gains, afterFirst, delta_t=0.1):
+
+        integral_term = 0
+        derivative_term = 0
+
+        if(afterFirst):
+            integral_term = self.controllerVariables['errorIntegral'] + (error * delta_t)
+            derivative_term = ((error-self.controllerVariables['prevError'])/delta_t)
+
         # Proportional term
         P = controller_gains['Kp'] * error
 
         # Integral term
-        integral_term = self.controllerVariables['errorIntegral'] + (error * delta_t)
         I = controller_gains['Ki'] * integral_term
 
         # Derivative term
-        derivative_term = ((error-self.controllerVariables['prevError'])/delta_t)
         D = controller_gains['Kd'] * derivative_term
 
         # Update the values in controllerVariables
