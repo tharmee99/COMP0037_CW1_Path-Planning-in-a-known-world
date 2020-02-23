@@ -105,13 +105,15 @@ class Move2GoalController(ControllerBase):
 
         angleError = self.shortestAngularDistance(self.pose.theta, goalOrientation)
 
+        afterFirst = False
+
         while (math.fabs(angleError) >= self.goalAngleErrorTolerance) & (not rospy.is_shutdown()):
             #print 'Angular Error: ' + str(angleError)
 
             # angular velocity in the z-axis:
             vel_msg.angular.x = 0
             vel_msg.angular.y = 0
-            vel_msg.angular.z = max(-5.0, min(self.angleErrorGain * angleError, 5.0))
+            vel_msg.angular.z = max(-5.0, min(self.pid_controller(angleError,self.controllerVariables["angleErrorGain"],afterFirst), 5.0))
 
             # Publishing our vel_msg
             self.velocityPublisher.publish(vel_msg)
@@ -119,6 +121,10 @@ class Move2GoalController(ControllerBase):
                 self.plannerDrawer.flushAndUpdateWindow()
                 
             self.rate.sleep()
+
+            if (not afterFirst):
+                afterFirst = True
+
             angleError = self.shortestAngularDistance(self.pose.theta, goalOrientation)
 
         # Stop movement once finished
