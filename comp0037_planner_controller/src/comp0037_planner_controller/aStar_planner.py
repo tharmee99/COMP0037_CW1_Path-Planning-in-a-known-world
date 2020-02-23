@@ -6,6 +6,7 @@ from Queue import PriorityQueue
 from math import sqrt
 import random
 
+# List of possible heuristic to compare with passed argument
 heurstic_list = ["constant", "euclidean", "octile", "manhattan"]
 
 class AStarPlanner(DynamicPlanner):
@@ -13,9 +14,6 @@ class AStarPlanner(DynamicPlanner):
     # Construct the new planner object
     def __init__(self, title, occupancyGrid, heuristic):
         DynamicPlanner.__init__(self, title, occupancyGrid)
-
-        # random.seed(42)
-        # self.nonZeroConstant = random.randrange(parentCell.pathCost + 1)
 
         self.nonZeroConstant = 1
 
@@ -30,7 +28,7 @@ class AStarPlanner(DynamicPlanner):
         self.heuristics = heuristic.lower()
 
         
-
+    # Function to calculate the specified heuristic
     def calc_heuristics(self, cell):
         if(self.heuristics.lower() == heurstic_list[0]):
             return self.nonZeroConstant

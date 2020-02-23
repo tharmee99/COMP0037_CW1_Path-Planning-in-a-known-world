@@ -5,6 +5,8 @@ from Queue import PriorityQueue
 
 from math import sqrt
 
+# Implementation of the Dynamic Planner Algorithm which the Dijkstra and A* Algorithm inherit
+
 class DynamicPlanner(CellBasedForwardSearch):
 
     # Construct the new planner object
@@ -15,7 +17,7 @@ class DynamicPlanner(CellBasedForwardSearch):
     def calc_heuristics(self, cell):
         raise NotImplementedError()
 
-    # Simply put on the end of the queue    
+    # Insert the cell into the priority queue ordered by the cost to go summe with the heuristic  
     def pushCellOntoQueue(self, cell):
         if cell != self.start:
             cell.pathCost = cell.parent.pathCost + self.computeLStageAdditiveCost(cell.parent, cell)
@@ -32,11 +34,12 @@ class DynamicPlanner(CellBasedForwardSearch):
     def getQueueLength(self):
         return self.plannerQueue.qsize()
 
-    # Simply pull from the front of the list
+    # Pop the first element of the queue (smallest priority value)
     def popCellFromQueue(self):
         cell = self.plannerQueue.get()[1]
         return cell
 
+    # Resolves revisiting a cell
     def resolveDuplicate(self, cell, parentCell):
         newPathCost = parentCell.pathCost + self.computeLStageAdditiveCost(parentCell, cell)
 
