@@ -28,7 +28,7 @@ class AStarPlanner(DynamicPlanner):
         self.heuristics = heuristic.lower()
 
         
-    # Fucntion to calculate the specifiec heuristic
+    # Function to calculate the specified heuristic
     def calc_heuristics(self, cell):
         if(self.heuristics.lower() == heurstic_list[0]):
             return self.nonZeroConstant
