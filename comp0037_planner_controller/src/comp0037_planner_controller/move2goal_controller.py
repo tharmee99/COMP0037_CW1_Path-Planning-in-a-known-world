@@ -7,6 +7,8 @@ from comp0037_planner_controller.planned_path import PlannedPath
 from comp0037_planner_controller.controller_base import ControllerBase
 import math
 import angles
+import os
+import csv
 
 # This sample controller works a fairly simple way. It figures out
 # where the goal is. It first turns the robot until it's roughly in
@@ -21,11 +23,14 @@ class Move2GoalController(ControllerBase):
         # Get the proportional gain settings
         # self.distanceErrorGain = rospy.get_param('distance_error_gain', 1)
         # self.angleErrorGain = rospy.get_param('angle_error_gain', 4)
-        self.controllerVariables["distanceErrorGain"] = rospy.get_param('distance_gain', {'Kp':1,'Ki':0,'Kd':0})
+        self.controllerVariables["distanceErrorGain"] = rospy.get_param('distance_gain', {'Kp':2,'Ki':0,'Kd':0})
         self.controllerVariables["angleErrorGain"] = rospy.get_param('angle_gain', {'Kp':4,'Ki':0,'Kd':0})
 
         self.driveAngleErrorTolerance = math.radians(rospy.get_param('angle_error_tolerance', 1))
         self.logData = True
+
+        if (self.logData):
+            self.firstLog = True
 
     
     def get_distance(self, goal_x, goal_y):
@@ -40,13 +45,17 @@ class Move2GoalController(ControllerBase):
             delta = delta - 2.0*math.pi
         return delta
         
-    def log_data(data):
-        path_to_file='../*/src/COMP0037_CW1_Path-Planning-in-a-known-world/comp0037_cw1/exports/data_for_tuning.csv'
+    def log_data(self, data):
+        # path_to_file='../*/src/COMP0037_CW1_Path-Planning-in-a-known-world/comp0037_cw1/exports/data_for_tuning.csv'
+        
+        path_to_file = os.path.join(os.path.split(self.exportDirectory)[0],'controller_log.csv')
+
         column_headers=['current_x','current_y','goal_x', 'goal_y', 'distance_error','theta', 'goal_theta', 'angle_error']
         with open(path_to_file, 'a') as write_csvfile:
             writer = csv.writer(write_csvfile)
-            if (os.stat(self.exportDirectory).st_size == 0):
+            if(self.firstLog):
                 writer.writerow(column_headers)
+                self.firstLog = False
             writer.writerow(data)
 
     def driveToWaypoint(self, waypoint):
@@ -63,7 +72,7 @@ class Move2GoalController(ControllerBase):
         while (distanceError >= self.distanceErrorTolerance) & (not rospy.is_shutdown()):
             if self.logData:
                 # x, y, theta, goal_x, goal_y, steering_angle, distance error, angle error
-                log_data([self.pose.x, self.pose.y,  waypoint[0], waypoint[1], distanceError,
+                self.log_data([self.pose.x, self.pose.y,  waypoint[0], waypoint[1], distanceError,
                         self.pose.theta, atan2(waypoint[1] - self.pose.y, waypoint[0] - self.pose.x), angleError])
 
             # print("Current Pose: x: {}, y:{} , theta: {}\nGoal: x: {}, y: {}\n".format(self.pose.x, self.pose.y,
@@ -123,8 +132,6 @@ class Move2GoalController(ControllerBase):
         afterFirst = False
 
         while (math.fabs(angleError) >= self.goalAngleErrorTolerance) & (not rospy.is_shutdown()):
-
-            #print 'Angular Error: ' + str(angleError)
 
             # angular velocity in the z-axis:
             vel_msg.angular.x = 0
