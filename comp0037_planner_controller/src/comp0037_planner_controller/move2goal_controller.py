@@ -37,7 +37,8 @@ class Move2GoalController(ControllerBase):
         self.driveAngleErrorTolerance = math.radians(rospy.get_param('angle_error_tolerance', 0.5))
         
         # Data logging settings used for tuning of PID controller
-        self.logData = "Angle"
+        # Set logData to one of None, "Distance" or "Angle"
+        self.logData = None
 
         if self.logData is not None:
             self.iter = 0
