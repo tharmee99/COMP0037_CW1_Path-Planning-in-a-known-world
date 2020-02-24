@@ -81,7 +81,8 @@
 				it might take a lot of time to find, as well as that the FIFO algorithm does not guarantee optimality.
 				\\
 				In the worst case scenario with the FIFO algorithm will consider every possible node and edge. Therefore
-				the complexity can be expressed as O(E) where E is the total number of edges in the graph. 
+				the complexity can be expressed as O(N+E) where N is the total number of nodes and E is the total number
+				of edges in the graph. 
 			
 			\subsubsection{LIFO - Depth First Search}
 			
@@ -98,31 +99,35 @@
 				produce a worse solution then it.  The biggest disadvantage is that there could be cases where 
 				it does not produce solutions. 
 				\\
-				This search runs in a time complexity of O(V+E), where V are vertices and E are edges. 
+				Similarly to the Breadth First Algorithm, in the worst case scneario the Depth first algorithm
+				will consider each node of the graph. This means that once again the complexity of the algorithm
+				can be expressed as O(N+E) where N is the total number of nodes and E is the total nuber of edges
+				in the graph
 			
 			\subsubsection{Greedy Search}
-				This algorithm works by first selecting the start node. It then explores its neighbours and
-				chooses the node which is the closest to the goal. It will then pivot around that node and 
-				repeat the exploration by moving towards the node that is closest to the goal by Euclidean 
-				distance. Once the algorithm reaches the target it stops. 
+				The Greedy Search Algorithm starts at the first node and adds neighbouring nodes to the queue. The
+				type of queue used in this algorithm is a priority queue with the priority value being the euclidean
+				distance between the node and the goal. This means that the nodes in the queue are sorted by their
+				euclidean distance to the goal. As a result when a node is popped from the queue it will be the node
+				with the lowest euclidean distance to the goal (out of the nodes in the queue). As a result the algorithm
+				will consider the cells closer to the goal first.
 				\\
-				The biggest advantage of the greedy algorithm is its easy implementation and its efficiency
-				in some cases. However, it is really bad at considering future obstacles and thus will sometimes
-				create unnecessary long paths. As well as that it does not consider the cost that can be associated
-				with particular map layout 
+				The biggest advantage of the greedy algorithm is its easy implementation and its efficiency in simple
+				cases. In maps with minimal/no obstructions, the greedy algorithm is able to find a path with siginificantly
+				fewer cells visited. However the optimality of the path is not guaranteed.
 				\\
 				Put time comp here!!!
 			\subsubsection{Dijkstra's}
-				This algorithm works by first setting the values for distances to every node to infinity. Once the starting 
-				node is specified, its distance value is set to zero. The algorithm then explores the neighbours of the starting 
-				node and records the distance to each. Once this is done, the algorithm will then pivot on the most promising 
-				node (the node which has the shortest distance from the previous one, exploring its neighbours. If it finds that 
-				there is a shorter path to a node that it has found distance to before, it will replace the old distance with the 
-				new one and record the new path to it. Once it reaches the target node with the shortest distance possible it will 
-				mark that path as the optimal one. 
+				This algorithm works by first setting the values for distances to every node to infinity. Once the
+				starting node is specified, its distance value is set to zero. The algorithm then explores the neighbours 
+				of the starting node and records the distance to each. Once this is done, the algorithm will then pivot
+				on the most promising node (the node which has the shortest distance from the previous one, exploring
+				its neighbours. If it finds that there is a shorter path to a node that it has found distance to before,
+				it will replace the old distance with the new one and record the new path to it. Once it reaches the
+				target node with the shortest distance possible it will mark that path as the optimal one. 
 				\\
-				Dijkstra's will always find the shortest path. It may however take a much longer time to do so as it performs blind 
-				search thus exploring nodes that go away from the goal node. 
+				Dijkstra's will always find the shortest path. It may however take a much longer time to do so as it
+				performs blind search thus exploring nodes that go away from the goal node. 
 				\\
 				This search runs in a time complexity of O(E*log(V)), where V are vertices and E are edges. 
 			\subsubsection{A* Search}
