@@ -24,9 +24,9 @@ class Move2GoalController(ControllerBase):
         # Get the proportional gain settings
         # self.distanceErrorGain = rospy.get_param('distance_error_gain', 1)
         # self.angleErrorGain = rospy.get_param('angle_error_gain', 4)
-
+        self.fileName = 'log_data_6.csv'
         # Original gain values for proportional controller
-        self.controllerVariables["distanceErrorGain"] = rospy.get_param('distance_gain', {'Kp':2,'Ki':0,'Kd':0})
+        self.controllerVariables["distanceErrorGain"] = rospy.get_param('distance_gain', {'Kp':3,'Ki':0,'Kd':0.1})
         self.controllerVariables["angleErrorGain"] = rospy.get_param('angle_gain', {'Kp':4,'Ki':0,'Kd':0})
 
         # Tuned values for PID controller
@@ -40,6 +40,7 @@ class Move2GoalController(ControllerBase):
         self.logData = True
 
         if (self.logData):
+            self.iter = 0
             self.firstLog = True
 
     
@@ -56,14 +57,18 @@ class Move2GoalController(ControllerBase):
         return delta
         
     def log_data(self, data):
-        path_to_file = os.path.join(os.path.split(self.exportDirectory)[0],'log_data_1.csv')
+        path_to_file = os.path.join(os.path.split(self.exportDirectory)[0],self.fileName)
 
         column_headers=['current_x','current_y','goal_x', 'goal_y', 'distance_error','theta', 'goal_theta', 'angle_error']
+        
+        if(self.firstLog):
+            with open(path_to_file, 'w') as write_csvfile:
+                writer = csv.writer(write_csvfile)
+                writer.writerow(column_headers)
+            self.firstLog = False
+        
         with open(path_to_file, 'a') as write_csvfile:
             writer = csv.writer(write_csvfile)
-            if(self.firstLog):
-                writer.writerow(column_headers)
-                self.firstLog = False
             writer.writerow(data)
 
     def driveToWaypoint(self, waypoint):
@@ -79,7 +84,7 @@ class Move2GoalController(ControllerBase):
         delta_t = 0
 
         while (distanceError >= self.distanceErrorTolerance) & (not rospy.is_shutdown()):
-            if self.logData:
+            if (self.iter > 1) and self.logData:
                 self.log_data([self.pose.x, self.pose.y,  waypoint[0], waypoint[1], distanceError,
                         self.pose.theta, atan2(waypoint[1] - self.pose.y, waypoint[0] - self.pose.x), angleError])
             
@@ -125,6 +130,8 @@ class Move2GoalController(ControllerBase):
 
             distanceError = sqrt(pow((waypoint[0] - self.pose.x), 2) + pow((waypoint[1] - self.pose.y), 2))
             angleError = self.shortestAngularDistance(self.pose.theta,atan2(waypoint[1] - self.pose.y, waypoint[0] - self.pose.x))
+
+        self.iter += 1
 
         # Make sure the robot is stopped once we reach the destination.
         vel_msg.linear.x = 0
