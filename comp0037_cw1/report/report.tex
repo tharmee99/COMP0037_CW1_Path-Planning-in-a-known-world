@@ -131,20 +131,24 @@
 				\\
 				This search runs in a time complexity of O(E*log(V)), where V are vertices and E are edges. 
 			\subsubsection{A* Search}
-				This algorithm works in a similar way to dijkstara’s however it additionally uses a heuristic to affect the way it 
-				selects which nodes to explore and visit. Heuristics used in our assignments are: 1. A non-negative constant value c, 
-				2. The Euclidean Distance to the goal, 3. The Octile Distance to the goal and 4. Manhattan Distance to the goal. 
-				Each node gets assigned a heuristic value. When the algorithm starts, the starting node is specified. The algorithm 
-				then explores its neighbours of the selected node. It ads them to the queue in the order of the combined value of 
-				distance from to start and heuristic. The algorithm will then move onto exploring from the node that is first in the queue. 
-				It will add the neighbours of that node into the same queue based on the combined parameter. If the algorithm visits 
-				a node which has already been visited, it will compare the travel distances from the start and ignore the heuristic 
-				value to select which path is best and editing the entry in the queue. Once the node and all its connections are fully 
-				explored, it is removed from the queue. Once the algorithm finds the target node, it has found the shortest path to it. 
+				This algorithm works in a similar way to dijkstara’s however it additionally uses a heuristic to affect
+				the way it selects which nodes to explore and visit. Heuristics used in our assignments are: 1. A
+				non-negative constant value c, 2. The Euclidean Distance to the goal, 3. The Octile Distance to the goal
+				and 4. Manhattan Distance to the goal. Each node gets assigned a heuristic value. When the algorithm starts,
+				the starting node is specified. The algorithm then explores its neighbours of the selected node. It ads them
+				to the queue in the order of the combined value of distance from to start and heuristic. The algorithm will
+				then move onto exploring from the node that is first in the queue. It will add the neighbours of that node
+				into the same queue based on the combined parameter. If the algorithm visits a node which has already been
+				visited, it will compare the travel distances from the start and ignore the heuristic value to select which
+				path is best and editing the entry in the queue. Once the node and all its connections are fully explored,
+				it is removed from the queue. Once the algorithm finds the target node, it has found the shortest path to it. 
 				\\
-				A* algorithm can also be adjusted by weighing the huristic in the addative cost. This will adjust the way that A* search making it more inadmissable .
+				A* algorithm can also be adjusted by weighing the huristic in the addative cost. This will adjust the way
+				that A* search making it more inadmissable .
 				\\
-				A* has a massive advantage over other algorithms which is the weighting of the nodes which allows the algorithm also consider distance to the target in deciding where to move to. This allows the algorithm to prioritise the queue based on the heuristic. 
+				A* has a massive advantage over other algorithms which is the weighting of the nodes which allows the algorithm
+				also consider distance to the target in deciding where to move to. This allows the algorithm to prioritise the
+				queue based on the heuristic. 
 				\\
 				Put time comp here!!!
 			\subsection{Comparing Performance of Algorithms}
