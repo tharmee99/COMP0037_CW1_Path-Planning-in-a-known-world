@@ -5,6 +5,7 @@ from geometry_msgs.msg  import Pose
 from math import pow,atan2,sqrt
 from comp0037_planner_controller.planned_path import PlannedPath
 from comp0037_planner_controller.controller_base import ControllerBase
+
 import math
 import angles
 import os
@@ -23,10 +24,19 @@ class Move2GoalController(ControllerBase):
         # Get the proportional gain settings
         # self.distanceErrorGain = rospy.get_param('distance_error_gain', 1)
         # self.angleErrorGain = rospy.get_param('angle_error_gain', 4)
+
+        # Original gain values for proportional controller
         self.controllerVariables["distanceErrorGain"] = rospy.get_param('distance_gain', {'Kp':2,'Ki':0,'Kd':0})
         self.controllerVariables["angleErrorGain"] = rospy.get_param('angle_gain', {'Kp':4,'Ki':0,'Kd':0})
 
+        # Tuned values for PID controller
+        # self.controllerVariables["distanceErrorGain"] = rospy.get_param('distance_gain', {'Kp':3,'Ki':0,'Kd':0.05})
+        # self.controllerVariables["angleErrorGain"] = rospy.get_param('angle_gain', {'Kp':4,'Ki':0,'Kd':0.1})
+
+        # Tolerance for the steering angle
         self.driveAngleErrorTolerance = math.radians(rospy.get_param('angle_error_tolerance', 1))
+        
+        # Data logging settings used for tuning of PID controller
         self.logData = True
 
         if (self.logData):
@@ -46,9 +56,7 @@ class Move2GoalController(ControllerBase):
         return delta
         
     def log_data(self, data):
-        # path_to_file='../*/src/COMP0037_CW1_Path-Planning-in-a-known-world/comp0037_cw1/exports/data_for_tuning.csv'
-        
-        path_to_file = os.path.join(os.path.split(self.exportDirectory)[0],'controller_log.csv')
+        path_to_file = os.path.join(os.path.split(self.exportDirectory)[0],'log_data_1.csv')
 
         column_headers=['current_x','current_y','goal_x', 'goal_y', 'distance_error','theta', 'goal_theta', 'angle_error']
         with open(path_to_file, 'a') as write_csvfile:
@@ -63,40 +71,40 @@ class Move2GoalController(ControllerBase):
 
         dX = waypoint[0] - self.pose.x
         dY = waypoint[1] - self.pose.y
+
         distanceError = sqrt(dX * dX + dY * dY)
         angleError = self.shortestAngularDistance(self.pose.theta, atan2(dY, dX))
-
-        afterFirst = False
+        
+        afterFirstIteration = False
         delta_t = 0
 
         while (distanceError >= self.distanceErrorTolerance) & (not rospy.is_shutdown()):
             if self.logData:
-                # x, y, theta, goal_x, goal_y, steering_angle, distance error, angle error
                 self.log_data([self.pose.x, self.pose.y,  waypoint[0], waypoint[1], distanceError,
                         self.pose.theta, atan2(waypoint[1] - self.pose.y, waypoint[0] - self.pose.x), angleError])
-
-            # print("Current Pose: x: {}, y:{} , theta: {}\nGoal: x: {}, y: {}\n".format(self.pose.x, self.pose.y,
-            #                                                                           self.pose.theta, waypoint[0],
-            #                                                                           waypoint[1]))
+            
             # print("Distance Error: {}\nAngular Error: {}".format(distanceError, angleError))
 
             # Proportional Controller
             # Linear velocity in the x-axis: only switch on when the angular error is sufficiently small
-            
+
             startX = self.pose.x
             startY = self.pose.y
             
             startTheta = self.pose.theta
 
+            vel_msg.linear.x = 0
+            vel_msg.angular.z = 0
+            
             if math.fabs(angleError) < self.driveAngleErrorTolerance:
-                vel_msg.linear.x = max(0.0, min(self.pid_controller(distanceError,self.controllerVariables["distanceErrorGain"],afterFirst), 10.0))
+                vel_msg.linear.x = max(0.0, min(self.pid_controller(distanceError,self.controllerVariables["distanceErrorGain"],afterFirstIteration,1/self.rospy_rate), 10.0))
                 vel_msg.linear.y = 0
                 vel_msg.linear.z = 0
 
             # angular velocity in the z-axis:
             vel_msg.angular.x = 0
             vel_msg.angular.y = 0
-            vel_msg.angular.z = max(-5.0, min(self.pid_controller(angleError,self.controllerVariables["angleErrorGain"],afterFirst), 5.0))
+            vel_msg.angular.z = max(-5.0, min(self.pid_controller(angleError,self.controllerVariables["angleErrorGain"],afterFirstIteration,1/self.rospy_rate), 5.0))
 
 
             #print("Linear Velocity: {}\nAngular Velocity: {}\n\n".format(vel_msg.linear.x, math.degrees(vel_msg.angular.z)))
@@ -110,12 +118,11 @@ class Move2GoalController(ControllerBase):
             self.pathMetrics["distanceTravelled"] += self.get_distance(startX,startY)
             self.pathMetrics["totalAngleTurned"] += abs(self.shortestAngularDistance(startTheta, self.pose.theta)) * (180/math.pi)
 
-            if(not afterFirst):
-                afterFirst = True
+            if(not afterFirstIteration):
+                afterFirstIteration = True
 
             distanceError = sqrt(pow((waypoint[0] - self.pose.x), 2) + pow((waypoint[1] - self.pose.y), 2))
-            angleError = self.shortestAngularDistance(self.pose.theta,
-                                                      atan2(waypoint[1] - self.pose.y, waypoint[0] - self.pose.x))
+            angleError = self.shortestAngularDistance(self.pose.theta,atan2(waypoint[1] - self.pose.y, waypoint[0] - self.pose.x))
 
         # Make sure the robot is stopped once we reach the destination.
         vel_msg.linear.x = 0
@@ -129,14 +136,15 @@ class Move2GoalController(ControllerBase):
 
         angleError = self.shortestAngularDistance(self.pose.theta, goalOrientation)
 
-        afterFirst = False
 
+        afterFirstIteration = False
+        delta_t = 0
         while (math.fabs(angleError) >= self.goalAngleErrorTolerance) & (not rospy.is_shutdown()):
 
             # angular velocity in the z-axis:
             vel_msg.angular.x = 0
             vel_msg.angular.y = 0
-            vel_msg.angular.z = max(-5.0, min(self.pid_controller(angleError,self.controllerVariables["angleErrorGain"],afterFirst), 5.0))
+            vel_msg.angular.z = max(-5.0, min(self.pid_controller(angleError,self.controllerVariables["angleErrorGain"],afterFirstIteration,1/self.rospy_rate), 5.0))
 
             # Publishing our vel_msg
             self.velocityPublisher.publish(vel_msg)
@@ -145,8 +153,8 @@ class Move2GoalController(ControllerBase):
                 
             self.rate.sleep()
 
-            if (not afterFirst):
-                afterFirst = True
+            if (not afterFirstIteration):
+                afterFirstIteration = True
 
             angleError = self.shortestAngularDistance(self.pose.theta, goalOrientation)
 

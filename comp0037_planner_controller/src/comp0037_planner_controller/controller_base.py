@@ -6,6 +6,7 @@ from std_msgs.msg import String
 from nav_msgs.msg import Odometry
 from math import pow,atan2,sqrt,pi
 from planned_path import PlannedPath
+import matplotlib.pyplot as plt
 import time
 import math
 import os
@@ -40,7 +41,8 @@ class ControllerBase(object):
         self.occupancyGrid = occupancyGrid
         
         # This is the rate at which we broadcast updates to the simulator in Hz.
-        self.rate = rospy.Rate(10)
+        self.rospy_rate = 20.0
+        self.rate = rospy.Rate(self.rospy_rate)
 
         self.exportDirectory = ""
         
@@ -129,10 +131,7 @@ class ControllerBase(object):
         rospy.loginfo('Driving path to goal with ' + str(len(path.waypoints)) + ' waypoint(s)')
         
         startTime = time.time()
-
-        print("------------------------------------------------------------------")
-        print(self.simulationTimeScaleFactor)
-
+        
         # Drive to each waypoint in turn
         for waypointNumber in range(0, len(path.waypoints)):
             cell = path.waypoints[waypointNumber]
