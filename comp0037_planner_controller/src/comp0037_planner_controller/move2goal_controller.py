@@ -27,22 +27,21 @@ class Move2GoalController(ControllerBase):
         self.fileName = 'ang_log_data_5.csv'
         # Original gain values for proportional controller
         self.controllerVariables["distanceErrorGain"] = rospy.get_param('distance_gain', {'Kp':3,'Ki':0,'Kd':0.1})
-        self.controllerVariables["angleErrorGain"] = rospy.get_param('angle_gain', {'Kp':15,'Ki':0,'Kd':5})
+        self.controllerVariables["angleErrorGain"] = rospy.get_param('angle_gain', {'Kp':3,'Ki':0,'Kd':0})
 
         # Tuned values for PID controller
         # self.controllerVariables["distanceErrorGain"] = rospy.get_param('distance_gain', {'Kp':2,'Ki':0,'Kd':0.01})
         # self.controllerVariables["angleErrorGain"] = rospy.get_param('angle_gain', {'Kp':3,'Ki':0,'Kd':0.01})
 
         # Tolerance for the steering angle
-        self.driveAngleErrorTolerance = math.radians(rospy.get_param('angle_error_tolerance', 0.5))
+        self.driveAngleErrorTolerance = math.radians(rospy.get_param('angle_error_tolerance', 0.05))
         
         # Data logging settings used for tuning of PID controller
         # Set logData to one of None, "Distance" or "Angle"
         self.logData = None
 
-        if self.logData is not None:
-            self.iter = 0
-            self.firstLog = True
+        self.iter = 0
+        self.firstLog = True
 
     
     def get_distance(self, goal_x, goal_y):

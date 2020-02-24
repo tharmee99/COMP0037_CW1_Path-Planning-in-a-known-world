@@ -15,16 +15,18 @@ class AStarPlanner(DynamicPlanner):
     def __init__(self, title, occupancyGrid, heuristic):
         DynamicPlanner.__init__(self, title, occupancyGrid)
 
-        self.nonZeroConstant = 1
-        self.scalingFactor = 1
+        self.nonZeroConstant = 5
+        self.scalingFactor = 10
 
         if(heuristic.lower() not in heurstic_list):
             heuristic = "0"
         
+        weightingLabel = '' if (self.scalingFactor == 1) else '{}*'.format(self.scalingFactor)
+
         if(heuristic.lower() == heurstic_list[0]):
             self.plannerName = 'A* Algorithm (Heuristic: {} = {})'.format(heuristic.capitalize(), self.nonZeroConstant)
         else:
-            self.plannerName = 'A* Algorithm (Heuristic: {})'.format(heuristic.capitalize())
+            self.plannerName = 'A* Algorithm (Heuristic: {}{})'.format(weightingLabel,heuristic.capitalize())
 
         self.heuristics = heuristic.lower()
 

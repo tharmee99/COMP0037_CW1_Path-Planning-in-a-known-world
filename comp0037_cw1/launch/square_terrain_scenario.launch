@@ -5,8 +5,8 @@
   <rosparam param="time_scale_factor">1</rosparam>
 
   <!-- Scenario -->
-  <arg name="map_file" default="$(find comp0037_resources)/maps/square_terrain.yaml"/>
-  <arg name="goal_file" default="$(find comp0037_resources)/maps/square_terrain_goals.txt"/>
+  <arg name="map_file" default="$(find comp0037_resources)/maps/empty.yaml"/>
+  <arg name="goal_file" default="$(find comp0037_resources)/maps/empty_goals.txt"/>
 
   <node pkg="comp0037_time_server" name="time_server" type="time_server_node.py"/>
   <node pkg="comp0037_the_boss" name="the_boss" type="boss_node.py" args="$(arg goal_file)" output="screen"/>
