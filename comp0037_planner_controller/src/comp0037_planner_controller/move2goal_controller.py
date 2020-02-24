@@ -24,10 +24,10 @@ class Move2GoalController(ControllerBase):
         # Get the proportional gain settings
         # self.distanceErrorGain = rospy.get_param('distance_error_gain', 1)
         # self.angleErrorGain = rospy.get_param('angle_error_gain', 4)
-        self.fileName = 'log_data_6.csv'
+        self.fileName = 'ang_log_data_5.csv'
         # Original gain values for proportional controller
         self.controllerVariables["distanceErrorGain"] = rospy.get_param('distance_gain', {'Kp':3,'Ki':0,'Kd':0.1})
-        self.controllerVariables["angleErrorGain"] = rospy.get_param('angle_gain', {'Kp':4,'Ki':0,'Kd':0})
+        self.controllerVariables["angleErrorGain"] = rospy.get_param('angle_gain', {'Kp':15,'Ki':0,'Kd':5})
 
         # Tuned values for PID controller
         # self.controllerVariables["distanceErrorGain"] = rospy.get_param('distance_gain', {'Kp':2,'Ki':0,'Kd':0.01})
@@ -37,9 +37,9 @@ class Move2GoalController(ControllerBase):
         self.driveAngleErrorTolerance = math.radians(rospy.get_param('angle_error_tolerance', 0.5))
         
         # Data logging settings used for tuning of PID controller
-        self.logData = True
+        self.logData = "Angle"
 
-        if (self.logData):
+        if self.logData is not None:
             self.iter = 0
             self.firstLog = True
 
@@ -58,8 +58,10 @@ class Move2GoalController(ControllerBase):
         
     def log_data(self, data):
         path_to_file = os.path.join(os.path.split(self.exportDirectory)[0],self.fileName)
-
-        column_headers=['current_x','current_y','goal_x', 'goal_y', 'distance_error','theta', 'goal_theta', 'angle_error']
+        if self.logData == "Distance":
+            column_headers=['current_x','current_y','goal_x', 'goal_y', 'distance_error','theta', 'goal_theta', 'angle_error']
+        elif self.logData == "Angle":
+            column_headers=['current_x','current_y','goal_orientation', 'theta', 'angle_error']
         
         if(self.firstLog):
             with open(path_to_file, 'w') as write_csvfile:
@@ -84,7 +86,7 @@ class Move2GoalController(ControllerBase):
         delta_t = 0
 
         while (distanceError >= self.distanceErrorTolerance) & (not rospy.is_shutdown()):
-            if (self.iter > 1) and self.logData:
+            if (self.iter > 0) and self.logData == "Distance":
                 self.log_data([self.pose.x, self.pose.y,  waypoint[0], waypoint[1], distanceError,
                         self.pose.theta, atan2(waypoint[1] - self.pose.y, waypoint[0] - self.pose.x), angleError])
             
@@ -105,8 +107,6 @@ class Move2GoalController(ControllerBase):
                 vel_msg.linear.x = max(0.0, min(self.pid_controller(distanceError,self.controllerVariables["distanceErrorGain"],afterFirstIteration,1/self.rospy_rate), 10.0))
                 vel_msg.linear.y = 0
                 vel_msg.linear.z = 0
-
-            print(vel_msg.linear.x)
 
             # angular velocity in the z-axis:
             vel_msg.angular.x = 0
@@ -149,7 +149,10 @@ class Move2GoalController(ControllerBase):
         afterFirstIteration = False
         delta_t = 0
         while (math.fabs(angleError) >= self.goalAngleErrorTolerance) & (not rospy.is_shutdown()):
-
+            
+            if self.logData == "Angle":
+                self.log_data([self.pose.x, self.pose.y, goalOrientation, self.pose.theta, angleError])
+            
             # angular velocity in the z-axis:
             vel_msg.angular.x = 0
             vel_msg.angular.y = 0
@@ -164,7 +167,7 @@ class Move2GoalController(ControllerBase):
 
             if (not afterFirstIteration):
                 afterFirstIteration = True
-
+            
             angleError = self.shortestAngularDistance(self.pose.theta, goalOrientation)
 
         # Stop movement once finished
