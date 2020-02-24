@@ -1,6 +1,9 @@
 */cmake-build-debug/
 */.idea
 
+.catkin_workspace
+/build
+
 */build/
 */bin/
 */lib/

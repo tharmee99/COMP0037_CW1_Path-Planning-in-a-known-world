@@ -17,7 +17,11 @@ from comp0037_planner_controller.srv import *
 from comp0037_planner_controller.occupancy_grid import OccupancyGrid
 
 # The planner used to figure out the path
-from comp0037_planner_controller.z_planner import FIFOPlanner
+from comp0037_planner_controller.fifo_planner import FIFOPlanner
+from comp0037_planner_controller.lifo_planner import LIFOPlanner
+from comp0037_planner_controller.greedy_planner import GreedyPlanner
+from comp0037_planner_controller.dijkstra_planner import DijkstraPlanner
+from comp0037_planner_controller.aStar_planner import AStarPlanner
 
 # The controller to drive the robot along the path
 from comp0037_planner_controller.move2goal_controller import Move2GoalController
@@ -52,12 +56,26 @@ class PlannerControllerNode(object):
         self.occupancyGrid.expandObstaclesToAccountForCircularRobotOfRadius(0.2)
 
     def createPlanner(self):
-        self.planner = FIFOPlanner('FIFO', self.occupancyGrid)
+        plannerChoice = sys.argv[2].lower()
+
+        if(plannerChoice == 'lifo'):
+            self.planner = LIFOPlanner('LIFO', self.occupancyGrid)
+        elif(plannerChoice == 'greedy'):
+            self.planner = GreedyPlanner('Greedy', self.occupancyGrid)
+        elif(plannerChoice == 'dijkstra'):
+            self.planner = DijkstraPlanner('Dijkstra', self.occupancyGrid)
+        elif(plannerChoice == 'astar'):
+            self.planner = AStarPlanner('A Star', self.occupancyGrid, sys.argv[3])
+        else:
+            self.planner = FIFOPlanner('FIFO', self.occupancyGrid)
+        
         self.planner.setPauseTime(0)
         self.planner.windowHeightInPixels = rospy.get_param('maximum_window_height_in_pixels', 700)
         
     def createRobotController(self):
         self.robotController = Move2GoalController(self.occupancyGrid)
+        self.robotController.exportDirectory = sys.argv[1]
+        self.robotController.plannerName = self.planner.plannerName
 
     def handleDriveToGoal(self, goal):
         # Report to the main loop that we have a new goal
@@ -98,6 +116,8 @@ class PlannerControllerNode(object):
 
         # Get the plan
         goalReached = self.planner.search(startCellCoords, goalCellCoords)
+
+        self.robotController.pathMetrics["plannerPerformance"] = self.planner.performanceMetrics
 
         # Exit if we need to
         if rospy.is_shutdown() is True:

@@ -8,6 +8,8 @@ from math import pow,atan2,sqrt,pi
 from planned_path import PlannedPath
 import time
 import math
+import os
+import csv
 
 # This is the base class of the controller which moves the robot to its goal.
 
@@ -37,6 +39,19 @@ class ControllerBase(object):
         
         # This is the rate at which we broadcast updates to the simulator in Hz.
         self.rate = rospy.Rate(10)
+
+        self.exportDirectory = ""
+
+        self.simulationTimeScaleFactor = rospy.get_param('time_scale_factor')
+
+        self.goalNo = 0
+        self.plannerName = ""
+        self.pathMetrics = {
+            "timeForPath" : 0.0,
+            "distanceTravelled" : 0.0,
+            "totalAngleTurned" : 0.0,
+            "plannerPerformance" : {}
+        }
 
     # Get the pose of the robot. Store this in a Pose2D structure because
     # this is easy to use. Use radians for angles because these are used
@@ -69,11 +84,22 @@ class ControllerBase(object):
     # Drive to each waypoint in turn. Unfortunately we have to add
     # the planner drawer because we have to keep updating it to
     # make sure the graphics are redrawn properly.
-    def drivePathToGoal(self, path, goalOrientation, plannerDrawer):
+    def drivePathToGoal(self, path, goalOrientation, plannerDrawer, export=True):
         self.plannerDrawer = plannerDrawer
+
+        self.goalNo += 1
+
+        self.pathMetrics["timeForPath"] = 0.0
+        self.pathMetrics["distanceTravelled"] = 0.0
+        self.pathMetrics["totalAngleTurned"] = 0.0
 
         rospy.loginfo('Driving path to goal with ' + str(len(path.waypoints)) + ' waypoint(s)')
         
+        startTime = time.time()
+
+        print("------------------------------------------------------------------")
+        print(self.simulationTimeScaleFactor)
+
         # Drive to each waypoint in turn
         for waypointNumber in range(0, len(path.waypoints)):
             cell = path.waypoints[waypointNumber]
@@ -86,7 +112,65 @@ class ControllerBase(object):
 
         rospy.loginfo('Rotating to goal orientation (' + str(goalOrientation) + ')')
         
+        endTime = time.time()
+        self.pathMetrics["timeForPath"] = (endTime-startTime)/(self.simulationTimeScaleFactor)
+        
+        if(export):
+            self.exportPathMetrics()
+
         # Finish off by rotating the robot to the final configuration
         if rospy.is_shutdown() is False:
             self.rotateToGoalOrientation(goalOrientation)
- 
+
+    def exportPathMetrics(self):        
+        column_headers = ['PlanningAlgorithm','goalNumber','distanceTravelled','totalAngleTurned','timeForPath',
+                          'plannerQueueLength','plannerCellsVisited','plannerPathCardinality','plannerPathCost','plannerAngleTurned']
+        
+        data = [self.plannerName, self.goalNo, self.pathMetrics['distanceTravelled'], self.pathMetrics['totalAngleTurned'], self.pathMetrics['timeForPath'],
+                self.pathMetrics['plannerPerformance']['maximumLengthOfQueue'], self.pathMetrics['plannerPerformance']['numberOfCellsVisited'], 
+                self.pathMetrics['plannerPerformance']['pathCardinality'], self.pathMetrics['plannerPerformance']['pathTravelCost'], 
+                self.pathMetrics['plannerPerformance']['totalAngleTurned']
+               ]
+
+        # If directory doesn't exist create directory
+        if not os.path.exists(os.path.split(self.exportDirectory)[0]):
+            os.makedirs(os.path.split(self.exportDirectory)[0])
+        
+        # If file doesn't exist create file
+        if(os.path.isfile(self.exportDirectory)):
+            isFileEmpty = (os.stat(self.exportDirectory).st_size == 0)
+        else:
+            isFileEmpty = True
+        
+        rowList=[]
+        rowFound=False
+
+        if isFileEmpty:
+            with open(self.exportDirectory, 'w') as write_csvfile:
+                # Instanstiate writer
+                writer = csv.writer(write_csvfile)
+                writer.writerow(column_headers)
+                writer.writerow(data)
+        else:
+            with open(self.exportDirectory, 'r') as read_csvfile:
+                    # Instantiate reader
+                    reader = csv.reader(read_csvfile)
+                    # Find if row already exists for that planner
+
+                    for row in reader:
+                        if(str(row[0])==str(self.plannerName) and str(row[1])==str(self.goalNo)):
+                            rowFound=True
+                        else:
+                            rowList.append(row)
+            # If row was not found then append file.          
+            if(not rowFound):
+                with open(self.exportDirectory, 'a') as write_csvfile:
+                    writer = csv.writer(write_csvfile)
+                    writer.writerow(data)
+            # If row was found then rewrite the whole file without the old row
+            else:
+                with open(self.exportDirectory, 'w') as write_csvfile:
+                    rowList.append(data)
+                    writer = csv.writer(write_csvfile)
+                    for row in rowList:
+                        writer.writerow(row)

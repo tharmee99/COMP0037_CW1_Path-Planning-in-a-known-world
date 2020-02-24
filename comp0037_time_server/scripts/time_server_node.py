@@ -16,8 +16,9 @@ class TimeServerNode(object):
         
         # How many times do we send a clock message per (wallclock) second?
         self.clockSendRate = rospy.get_param('clock_send_rate', 10)
-
+        
         # For each step, how far does the clock advance?
+        rospy.set_param('time_scale_factor', 2)
         self.timeScaleFactor = rospy.get_param('time_scale_factor', 1.5)
 
         # The publisher used to send the clock messages

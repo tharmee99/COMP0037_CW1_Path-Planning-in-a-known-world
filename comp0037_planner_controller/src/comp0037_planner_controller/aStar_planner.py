@@ -4,7 +4,9 @@ from dynamic_planner import DynamicPlanner
 from Queue import PriorityQueue
 
 from math import sqrt
+import random
 
+# List of possible heuristic to compare with passed argument
 heurstic_list = ["constant", "euclidean", "octile", "manhattan"]
 
 class AStarPlanner(DynamicPlanner):
@@ -12,16 +14,24 @@ class AStarPlanner(DynamicPlanner):
     # Construct the new planner object
     def __init__(self, title, occupancyGrid, heuristic):
         DynamicPlanner.__init__(self, title, occupancyGrid)
-        
+
+        self.nonZeroConstant = 1
+
         if(heuristic.lower() not in heurstic_list):
             heuristic = "0"
         
-        self.plannerName = 'A* Algorithm (Heuristic: {})'.format(heuristic.capitalize())
+        if(heuristic.lower() == heurstic_list[0]):
+            self.plannerName = 'A* Algorithm (Heuristic: {} = {})'.format(heuristic.capitalize(), self.nonZeroConstant)
+        else:
+            self.plannerName = 'A* Algorithm (Heuristic: {})'.format(heuristic.capitalize())
+
         self.heuristics = heuristic.lower()
 
-    def calc_heuristics(self, cell, parentCell):
+        
+    # Function to calculate the specified heuristic
+    def calc_heuristics(self, cell):
         if(self.heuristics.lower() == heurstic_list[0]):
-            return 5
+            return self.nonZeroConstant
 
         elif(self.heuristics.lower() == heurstic_list[1]):
             del_x = cell.coords[0] - self.goal.coords[0]

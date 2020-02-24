@@ -10,6 +10,7 @@ from math import *
 import json
 import rospy
 import os.path
+import csv
 
 class GeneralForwardSearchAlgorithm(PlannerBase):
 
@@ -20,6 +21,7 @@ class GeneralForwardSearchAlgorithm(PlannerBase):
     def __init__(self, title, occupancyGrid):
         PlannerBase.__init__(self, title, occupancyGrid)
         self.exportDirectory = ""
+        self.mapName = ""
         self.plannerName = ""
         self.performanceMetrics = {
             "numberOfCellsVisited" : None,
@@ -203,8 +205,9 @@ class GeneralForwardSearchAlgorithm(PlannerBase):
     # start cell.
 
     def getAngle(self, parentCell, cell):
-        del_y = parentCell.coords[1]-cell.coords[1]
-        del_x = parentCell.coords[0]-cell.coords[0]
+        
+        del_y = cell.coords[1]-parentCell.coords[1]
+        del_x = cell.coords[1]-parentCell.coords[0]
 
         angle = atan2(del_y,del_x) * (180/pi)
 
@@ -290,21 +293,57 @@ class GeneralForwardSearchAlgorithm(PlannerBase):
        
         return path
 
-    def exportMetrics(self):
-        data = {}
+    def exportMetrics(self):        
+        column_headers = ['PlanningAlgorithm','mapName','numberOfCellsVisited',
+                            'maximumLengthOfQueue','totalAngleTurned',
+                            'pathTravelCost','pathCardinality']
+        
+        data = [self.plannerName, self.mapName, self.performanceMetrics['numberOfCellsVisited'],
+                self.performanceMetrics['maximumLengthOfQueue'], self.performanceMetrics['totalAngleTurned'],
+                self.performanceMetrics['pathTravelCost'], self.performanceMetrics['pathCardinality']]
 
-        if(not os.path.isfile(self.exportDirectory)):
-            with open(self.exportDirectory, 'w+') as outfile:
-                json.dump(data, outfile)
-            pass
+        # If directory doesn't exist create directory
+        if not os.path.exists(os.path.split(self.exportDirectory)[0]):
+            os.makedirs(os.path.split(self.exportDirectory)[0])
+        
+        # If file doesn't exist create file
+        if(os.path.isfile(self.exportDirectory)):
+            isFileEmpty = (os.stat(self.exportDirectory).st_size == 0)
+        else:
+            isFileEmpty = True
+            
+        rowList=[]
+        rowFound=False
 
-        with open(self.exportDirectory) as json_file:
-            data = json.load(json_file)
+        if isFileEmpty:
+            with open(self.exportDirectory, 'w') as write_csvfile:
+                # Instanstiate writer
+                writer = csv.writer(write_csvfile)
+                writer.writerow(column_headers)
+                writer.writerow(data)
+        else:
+            with open(self.exportDirectory, 'r') as read_csvfile:
+                    # Instantiate reader
+                    reader = csv.reader(read_csvfile)
+                    # Find if row already exists for that planner
 
-        data[self.plannerName] = self.performanceMetrics
-
-        with open(self.exportDirectory, 'w+') as outfile:
-            json.dump(data, outfile)
+                    for row in reader:
+                        if(str(row[0])==str(self.plannerName) and str(row[1])==str(self.mapName)):
+                            rowFound=True
+                        else:
+                            rowList.append(row)
+            # If row was not found then append file.          
+            if(not rowFound):
+                with open(self.exportDirectory, 'a') as write_csvfile:
+                    writer = csv.writer(write_csvfile)
+                    writer.writerow(data)
+            # If row was found then rewrite the whole file without the old row
+            else:
+                with open(self.exportDirectory, 'w') as write_csvfile:
+                    rowList.append(data)
+                    writer = csv.writer(write_csvfile)
+                    for row in rowList:
+                        writer.writerow(row)
 
 
         
