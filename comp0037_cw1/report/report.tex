@@ -7,6 +7,7 @@
 \usepackage{graphicx}
 \usepackage{float}
 \usepackage{setspace}
+\usepackage{appendix}
 
 %***************************************DOCUMENT***************************************
 
@@ -14,10 +15,9 @@
 	\fontfamily{ptm}\selectfont
 	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%COVERSHEET%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 	\begin{titlepage}
-		\setlength{\voffset}{-1.5in}
-		\noindent \makebox[\textwidth]{\includegraphics[width=1.2\textwidth]{Coversheet_Header.png}}
-		%\includegraphics[width=0.15\textwidth]{{Coversheet_Header}\par\vspace{1cm}
-			
+		\setlength{\voffset}{-0.8in}
+		\noindent \makebox[\textwidth]{\includegraphics[width=1.2\textwidth]{images/Coversheet_Header.png}}
+	
 			\vspace{15mm}
 			
 			\begin{center}
@@ -68,7 +68,7 @@
 				\renewcommand\thefigure{1.1}
 				\centering
 				
-				\includegraphics[scale=0.6]{general_forward_search_pseudocode.png}
+				\includegraphics[scale=0.6]{images/general_forward_search_pseudocode.png}
 				\caption{The general forward search algorithm pseudocode. }
 			\end{figure}
 			
@@ -167,5 +167,18 @@
 	- Considered reducing the number of waypoints to make controlling better 
 	- Sampling rate can be a factor 
 	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+	
+	\newpage
+	
+	\appendix
+	\appendixpage
+	\addappheadtotoc
+	\section{Class Inheritance}
+	\subsection{Planner Inheritance}
+	\label{appendix:planner}
+	\includegraphics[scale=0.6]{images/planner_inheritance.png}
+	\subsection{Controller Inheritance}
+	\label{appendix:controller}
+	\includegraphics[scale=0.6]{images/controller_inheritance.png}
 	
 \end{document}
