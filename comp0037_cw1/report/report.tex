@@ -2,14 +2,14 @@
 \documentclass[a4paper,12pt]{article}
 
 \usepackage[utf8]{inputenc}
-\usepackage[T1]{fontenc}
+% \usepackage[T1]{fontenc}
 \usepackage{graphicx}
 \usepackage{setspace}
 
 %***************************************DOCUMENT***************************************
 
 \begin{document}
-	\fontfamily{ptm}\selectfont
+	% \fontfamily{ptm}\selectfont
 	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%COVERSHEET%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 	\begin{titlepage}
 		\setlength{\voffset}{-1.5in}
@@ -37,8 +37,8 @@
 				\begin{tabular}{ll}
 					\underline{\textbf{Student Name}}  & \hspace{4mm} \underline{\textbf{Student number}} \vspace{2mm} \\
 					Arundathi Shaji Shanthini & \hspace{4mm} 16018351 \\ 
-					Dmitry Leyko & \hspace{4mm}  \\ 
-					Tharmetharan Balendran & \hspace{4mm} \\ 
+					Dmitry Leyko & \hspace{4mm}  16021440\\ 
+					Tharmetharan Balendran & \hspace{4mm} 17011729\\ 
 				\end{tabular}
 				
 				\vspace{13mm}
@@ -58,14 +58,100 @@
 	\pagebreak
 	
 	%%%%%%%%%%% PART 1 %%%%%%%%%%%%%%%%%
-	\section{Part 1}
-	%\subsection{}
-	%\subsection{}
-	%\subsection{}
-	%\subsection{}
+	\section{Part 1 - Investigate, Implement Properties of Path Planning Algorithms}
+		
+	\subsection{Path Planning Algorithms}
+
+			\subsubsection{FIFO - Breadth First Search}
+
+				This algorithm works by selecting a particular node and exploring its neighbours first. 
+				It would then pivot around those neighbours to explore each of their neighbours. Layer by layer 
+				it will explore all the nodes on the graph network until it reaches the goal. The next nodes to
+				be considered are chosen by first considering the node directly underneath and then considering
+				the neighbouring nodes going anti-clockwise. It uses a concept of a queue to keep track of the
+				order of the exploration in the network. If a particular node shows itself twice to the algorithm,
+				it will use the first instance of it ignoring the second. The first path that reaches the finishing
+				node is the final output path, no mater of the cost. The name First in First Out (FIFO) comes from
+				the type of queue implemented in this search algorithm. The next node to be considered at any point
+				is the one that was added the first out of all the nodes in the queue. 
+				\\
+				The biggest advantage of FIFO is that it will never get stuck in a blind alley. If there is a 
+				solution it will find it. If there are multiple solutions, it will find one with the least steps.
+				The memory usage can be large as it stores all the nodes that it visits. If the solution is far,
+				it might take a lot of time to find, as well as that the FIFO algorithm does not guarantee optimality.
+				\\
+				In the worst case scenario with the FIFO algorithm will consider every possible node and edge. Therefore
+				the complexity can be expressed as O(E) where E is the total number of edges in the graph. 
+			
+			\subsubsection{LIFO - Depth First Search}
+			
+				This algorithm works by selecting a particular node and exploring its neighbour at random. It 
+				would then perform the same exploration on the neighbour and will pick a random neighbour of its. 
+				This will continue until it either riches a node with no other neighbours or visits an already 
+				visited node, it will then backtrack until it gets to a node with an unvisited neighbours, and 
+				it will explore that particular branch off. Once it backtracks to the original node and it has 
+				no other neighbours to explore, the algorithm would have finished and visited every node in the 
+				graph. The first path that reaches the finishing node is the final output path, no mater of the 
+				cost. 
+				\\
+				The advantage of DFA is the linear memory usage. It will also be faster than BFA, however will
+				produce a worse solution then it.  The biggest disadvantage is that there could be cases where 
+				it does not produce solutions. 
+				\\
+				This search runs in a time complexity of O(V+E), where V are vertices and E are edges. 
+			
+			\subsubsection{Greedy Search}
+				This algorithm works by first selecting the start node. It then explores its neighbours and
+				chooses the node which is the closest to the goal. It will then pivot around that node and 
+				repeat the exploration by moving towards the node that is closest to the goal by Euclidean 
+				distance. Once the algorithm reaches the target it stops. 
+				\\
+				The biggest advantage of the greedy algorithm is its easy implementation and its efficiency
+				in some cases. However, it is really bad at considering future obstacles and thus will sometimes
+				create unnecessary long paths. As well as that it does not consider the cost that can be associated
+				with particular map layout 
+				\\
+				Put time comp here!!!
+			\subsubsection{Dijkstra's}
+				This algorithm works by first setting the values for distances to every node to infinity. Once the starting 
+				node is specified, its distance value is set to zero. The algorithm then explores the neighbours of the starting 
+				node and records the distance to each. Once this is done, the algorithm will then pivot on the most promising 
+				node (the node which has the shortest distance from the previous one, exploring its neighbours. If it finds that 
+				there is a shorter path to a node that it has found distance to before, it will replace the old distance with the 
+				new one and record the new path to it. Once it reaches the target node with the shortest distance possible it will 
+				mark that path as the optimal one. 
+				\\
+				Dijkstra's will always find the shortest path. It may however take a much longer time to do so as it performs blind 
+				search thus exploring nodes that go away from the goal node. 
+				\\
+				This search runs in a time complexity of O(E*log(V)), where V are vertices and E are edges. 
+			\subsubsection{A* Search}
+				This algorithm works in a similar way to dijkstara’s however it additionally uses a heuristic to affect the way it 
+				selects which nodes to explore and visit. Heuristics used in our assignments are: 1. A non-negative constant value c, 
+				2. The Euclidean Distance to the goal, 3. The Octile Distance to the goal and 4. Manhattan Distance to the goal. 
+				Each node gets assigned a heuristic value. When the algorithm starts, the starting node is specified. The algorithm 
+				then explores its neighbours of the selected node. It ads them to the queue in the order of the combined value of 
+				distance from to start and heuristic. The algorithm will then move onto exploring from the node that is first in the queue. 
+				It will add the neighbours of that node into the same queue based on the combined parameter. If the algorithm visits 
+				a node which has already been visited, it will compare the travel distances from the start and ignore the heuristic 
+				value to select which path is best and editing the entry in the queue. Once the node and all its connections are fully 
+				explored, it is removed from the queue. Once the algorithm finds the target node, it has found the shortest path to it. 
+				\\
+				A* algorithm can also be adjusted by weighing the huristic in the addative cost. This will adjust the way that A* search making it more inadmissable .
+				\\
+				A* has a massive advantage over other algorithms which is the weighting of the nodes which allows the algorithm also consider distance to the target in deciding where to move to. This allows the algorithm to prioritise the queue based on the heuristic. 
+				\\
+				Put time comp here!!!
+			\subsection{Comparing Performance of Algorithms}
+
+		Describe the metrics used to compare performance \\
+		Descirbe how they were implemented \\
+		Compare and explain the difference in performance of the algorithms (See Teams for more details)
+
+
 	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 	%%%%%%%%%%% PART 2 %%%%%%%%%%%%%%%%%
-	\section{Part 2}
+	\section{Part 2 - Implementation in ROS}
 	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 	
 \end{document}
