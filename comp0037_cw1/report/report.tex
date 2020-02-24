@@ -2,8 +2,10 @@
 \documentclass[a4paper,12pt]{article}
 
 \usepackage[utf8]{inputenc}
+\usepackage[margin=0.7in]{geometry}
 % \usepackage[T1]{fontenc}
 \usepackage{graphicx}
+\usepackage{float}
 \usepackage{setspace}
 
 %***************************************DOCUMENT***************************************
@@ -13,7 +15,7 @@
 	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%COVERSHEET%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 	\begin{titlepage}
 		\setlength{\voffset}{-1.5in}
-		\noindent \makebox[\textwidth]{\includegraphics[width=1.55\textwidth]{Coversheet_Header.png}}
+		\noindent \makebox[\textwidth]{\includegraphics[width=1.2\textwidth]{Coversheet_Header.png}}
 		%\includegraphics[width=0.15\textwidth]{{Coversheet_Header}\par\vspace{1cm}
 			
 			\vspace{15mm}
@@ -58,31 +60,29 @@
 	\pagebreak
 	
 	%%%%%%%%%%% PART 1 %%%%%%%%%%%%%%%%%
-	\section{Part 1 - Investigate, Implement Properties of Path Planning Algorithms}
+	\section{Implement and Investigate Properties of Path Planning Algorithms}
 		
 	\subsection{Path Planning Algorithms}
-
+			
+			\begin{figure}[H]
+				\renewcommand\thefigure{1.1}
+				\centering
+				
+				\includegraphics[scale=0.6]{general_forward_search_pseudocode.png}
+				\caption{The general forward search algorithm pseudocode. }
+			\end{figure}
+			
+			All of the path planning algorithms have the same backbone and can be summed up into 15 lines of pseudocode shown in Fig 1.1. This algorithm describes the process of finding a path from a cell ($x_I$) to a goal cell ($X_G$). This general algorithm is called the general forward search algorithm and is implemented in the \textbf{GeneralForwardSearchAlgorithm} class. All planners that are implemented inherit from this class through the \textbf{CellBasedForwardSearch} class. The search algorithm is similar for all the planners and has also been implemented in the same \textbf{GeneralForwardSearchAlgorithm} class. What differs between the planners is the type of queue that is used and the implementation of the \textbf{resolveDuplicate} function. These properties and functions are defined in the classes of each of the individual planners. The high-level working of the planners we implemented and their properties are described below.
+			
 			\subsubsection{FIFO - Breadth First Search}
 
-				This algorithm works by selecting a particular node and exploring its neighbours first. 
-				It would then pivot around those neighbours to explore each of their neighbours. Layer by layer 
-				it will explore all the nodes on the graph network until it reaches the goal. The next nodes to
-				be considered are chosen by first considering the node directly underneath and then considering
-				the neighbouring nodes going anti-clockwise. It uses a concept of a queue to keep track of the
-				order of the exploration in the network. If a particular node shows itself twice to the algorithm,
-				it will use the first instance of it ignoring the second. The first path that reaches the finishing
-				node is the final output path, no mater of the cost. The name First in First Out (FIFO) comes from
-				the type of queue implemented in this search algorithm. The next node to be considered at any point
-				is the one that was added the first out of all the nodes in the queue. 
+				This algorithm works by selecting a particular node and exploring its neighbours first. It would then pivot around those neighbours to explore each of their neighbours. Layer by layer it will explore all the nodes on the graph network until it reaches the goal. The next nodes to be considered are chosen by first considering the node directly underneath and then considering the neighbouring nodes going anti-clockwise. This way of allocating the next set of nodes to be considered, is the same for all algorithms. The Breadth First Algorithm uses a queue to keep track of the order of the exploration in the network. If a particular node shows itself twice to the algorithm, it will use the first instance of it ignoring the second. The first path that reaches the finishing node is the final output path, no mater of the cost. The name First in First Out (FIFO) comes from the type of queue implemented in this search algorithm. The next node to be considered at any point is the one that was added the first out of all the nodes in the queue.
 				\\
-				The biggest advantage of FIFO is that it will never get stuck in a blind alley. If there is a 
-				solution it will find it. If there are multiple solutions, it will find one with the least steps.
-				The memory usage can be large as it stores all the nodes that it visits. If the solution is far,
-				it might take a lot of time to find, as well as that the FIFO algorithm does not guarantee optimality.
+				The Breadth First Search Algorithm utilizes a normal unsorted queue and was 
 				\\
-				In the worst case scenario with the FIFO algorithm will consider every possible node and edge. Therefore
-				the complexity can be expressed as O(N+E) where N is the total number of nodes and E is the total number
-				of edges in the graph. 
+				The biggest advantage of FIFO is that it will never get stuck in a blind alley. If there is a solution it will find it. If there are multiple solutions, it will find one with the least steps. The memory usage can be large as it stores all the nodes that it visits. If the solution is far, it might take a lot of time to find, as well as that the FIFO algorithm does not guarantee optimality.
+				\\
+				In the worst case scenario with the FIFO algorithm will consider every possible node and edge. Therefore the complexity can be expressed as O(N+E) where N is the total number of nodes and E is the total number of edges in the graph. 
 			
 			\subsubsection{LIFO - Depth First Search}
 			
@@ -99,9 +99,9 @@
 				produce a worse solution then it.  The biggest disadvantage is that there could be cases where 
 				it does not produce solutions. 
 				\\
-				Similarly to the Breadth First Algorithm, in the worst case scneario the Depth first algorithm
+				Similarly to the Breadth First Algorithm, in the worst case scenario the Depth first algorithm
 				will consider each node of the graph. This means that once again the complexity of the algorithm
-				can be expressed as O(N+E) where N is the total number of nodes and E is the total nuber of edges
+				can be expressed as O(N+E) where N is the total number of nodes and E is the total number of edges
 				in the graph
 			
 			\subsubsection{Greedy Search}
@@ -113,7 +113,7 @@
 				will consider the cells closer to the goal first.
 				\\
 				The biggest advantage of the greedy algorithm is its easy implementation and its efficiency in simple
-				cases. In maps with minimal/no obstructions, the greedy algorithm is able to find a path with siginificantly
+				cases. In maps with minimal/no obstructions, the greedy algorithm is able to find a path with significantly
 				fewer cells visited. However the optimality of the path is not guaranteed.
 				\\
 				Put time comp here!!!
@@ -160,7 +160,7 @@
 
 	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 	%%%%%%%%%%% PART 2 %%%%%%%%%%%%%%%%%
-	\section{Part 2 - Implementation in ROS}
+	\section{Implementation in ROS}
 	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 	
 \end{document}
