@@ -49,8 +49,9 @@ Greedy Planner,square_terrain,201,120,194.03961634818302,244.5578211882627,61
 Dijkstra's,square_terrain,2391,83,237.0484801923478,109.34441791807197,91
 A* Algorithm (Heuristic: 0),square_terrain,2391,83,237.0484801923478,109.34441791807197,91
 A* Algorithm (Heuristic: Euclidean),square_terrain,1826,197,216.87017351392672,109.34441791807197,91
-A* Algorithm (Heuristic: Octile),square_terrain,1739,162,211.66504910892706,109.34441791807197,91
 A* Algorithm (Heuristic: Manhattan),square_terrain,1352,321,207.7466712707352,109.38609655498031,91
 A* Algorithm (Heuristic: Constant = 20),square_terrain,2391,83,237.0484801923478,109.34441791807197,91
 A* Algorithm (Heuristic: Constant = 5),square_terrain,2391,83,237.0484801923478,109.34441791807197,91
 A* Algorithm (Heuristic: Constant = 1),square_terrain,2391,83,237.0484801923478,109.34441791807197,91
+A* Algorithm (Heuristic: Octile),square_terrain,1739,162,211.66504910892706,109.34441791807197,91
+A* Algorithm (Heuristic: Octile),Test1,945,203,226.04873826018334,60.020455661955815,46
