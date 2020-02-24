@@ -1,5 +1,4 @@
 PlanningAlgorithm,mapName,numberOfCellsVisited,maximumLengthOfQueue,totalAngleTurned,pathTravelCost,pathCardinality
-Breadth First (FIFO),empty,2917,109,180.91714331600295,71.2183357896362,46
 Depth First (LIFO),empty,4255,1648,459.23511558183606,359.0901011896535,256
 Greedy Planner,empty,180,136,268.5311992856142,60.02045566195582,46
 Dijkstra's,empty,2980,150,226.04873826018334,60.020455661955815,46
@@ -43,7 +42,6 @@ A* Algorithm (Heuristic: Manhattan),lines_terrain,1292,340,238.79090852371,103.3
 A* Algorithm (Heuristic: Constant = 20),lines_terrain,3522,145,238.77162350945574,103.3703132936622,72
 A* Algorithm (Heuristic: Constant = 5),lines_terrain,3522,145,238.77162350945574,103.3703132936622,72
 A* Algorithm (Heuristic: Constant = 1),lines_terrain,3522,145,238.77162350945574,103.3703132936622,72
-Breadth First (FIFO),square_terrain,2254,81,180.62684347379457,265.60708709406845,52
 Depth First (LIFO),square_terrain,1523,878,1659.670972219878,1995.7641541065245,523
 Greedy Planner,square_terrain,201,120,194.03961634818302,244.5578211882627,61
 Dijkstra's,square_terrain,2391,83,237.0484801923478,109.34441791807197,91
@@ -54,3 +52,5 @@ A* Algorithm (Heuristic: Manhattan),square_terrain,1352,321,207.7466712707352,10
 A* Algorithm (Heuristic: Constant = 20),square_terrain,2391,83,237.0484801923478,109.34441791807197,91
 A* Algorithm (Heuristic: Constant = 5),square_terrain,2391,83,237.0484801923478,109.34441791807197,91
 A* Algorithm (Heuristic: Constant = 1),square_terrain,2391,83,237.0484801923478,109.34441791807197,91
+Breadth First (FIFO),square_terrain,2254,81,180.62684347379457,265.60708709406845,52
+Breadth First (FIFO),empty,2758,91,226.83760713911877,82.53437112229028,56
