@@ -116,6 +116,19 @@ class ControllerBase(object):
     def rotateToGoalOrientation(self, waypoint):
         raise NotImplementedError()
 
+    def getAngle(self, parentCell, cell):
+        
+        del_y = cell.coords[1]-parentCell.coords[1]
+        del_x = cell.coords[1]-parentCell.coords[0]
+
+        angle = atan2(del_y,del_x) * (180/pi)
+
+        return angle
+
+    # def simplifyPath(self, path):
+    #     for waypointNumber in range(0, len(path.waypoints)):
+
+
     # Drive to each waypoint in turn. Unfortunately we have to add
     # the planner drawer because we have to keep updating it to
     # make sure the graphics are redrawn properly.
