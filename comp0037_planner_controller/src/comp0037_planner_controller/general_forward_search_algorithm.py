@@ -207,7 +207,7 @@ class GeneralForwardSearchAlgorithm(PlannerBase):
     def getAngle(self, parentCell, cell):
         
         del_y = cell.coords[1]-parentCell.coords[1]
-        del_x = cell.coords[1]-parentCell.coords[0]
+        del_x = cell.coords[0]-parentCell.coords[0]
 
         angle = atan2(del_y,del_x) * (180/pi)
 

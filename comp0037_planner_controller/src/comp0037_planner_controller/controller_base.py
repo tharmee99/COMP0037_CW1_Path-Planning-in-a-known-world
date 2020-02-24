@@ -6,6 +6,7 @@ from std_msgs.msg import String
 from nav_msgs.msg import Odometry
 from math import pow,atan2,sqrt,pi
 from planned_path import PlannedPath
+import matplotlib.pyplot as plt
 import time
 import math
 import os
@@ -27,8 +28,10 @@ class ControllerBase(object):
         # distance from the target within which the robot is assumed
         # to be there. The second is the angle. The latter is turned
         # into radians for ease of the controller.
+
         self.distanceErrorTolerance = rospy.get_param('distance_error_tolerance', 0.05)
         self.goalAngleErrorTolerance = math.radians(rospy.get_param('goal_angle_error_tolerance', 0.1))
+        
 
         # Set the pose to an initial value to stop things crashing
         self.pose = Pose2D()
@@ -38,9 +41,17 @@ class ControllerBase(object):
         self.occupancyGrid = occupancyGrid
         
         # This is the rate at which we broadcast updates to the simulator in Hz.
-        self.rate = rospy.Rate(10)
+        self.rospy_rate = 20.0
+        self.rate = rospy.Rate(self.rospy_rate)
 
         self.exportDirectory = ""
+        
+        self.controllerVariables = {
+            "distanceErrorGain" : {},
+            "angleErrorGain" : {},
+            "prevError" : 0,
+            "errorIntegral" : 0
+        }
 
         self.simulationTimeScaleFactor = rospy.get_param('time_scale_factor')
 
@@ -52,6 +63,30 @@ class ControllerBase(object):
             "totalAngleTurned" : 0.0,
             "plannerPerformance" : {}
         }
+
+    def pid_controller(self, error, controller_gains, afterFirst, delta_t=0.1):
+
+        integral_term = 0
+        derivative_term = 0
+
+        if(afterFirst):
+            integral_term = self.controllerVariables['errorIntegral'] + (error * delta_t)
+            derivative_term = ((error-self.controllerVariables['prevError'])/delta_t)
+
+        # Proportional term
+        P = controller_gains['Kp'] * error
+
+        # Integral term
+        I = controller_gains['Ki'] * integral_term
+
+        # Derivative term
+        D = controller_gains['Kd'] * derivative_term
+
+        # Update the values in controllerVariables
+        self.controllerVariables['prevError'] = error
+        self.controllerVariables['errorIntegral'] = integral_term
+
+        return (P + I + D)
 
     # Get the pose of the robot. Store this in a Pose2D structure because
     # this is easy to use. Use radians for angles because these are used
@@ -81,6 +116,42 @@ class ControllerBase(object):
     def rotateToGoalOrientation(self, waypoint):
         raise NotImplementedError()
 
+    def getAngle(self, parentCell, cell):
+        
+        del_y = cell.coords[1]-parentCell.coords[1]
+        del_x = cell.coords[0]-parentCell.coords[0]
+
+        angle = atan2(del_y,del_x) * (180/pi)
+
+        return angle
+
+    def simplifyPath(self, path):
+        new_waypoints = []
+
+        new_waypoints.append(path.waypoints[0])
+        new_waypoints.append(path.waypoints[1])
+
+        perviousTrajectory = self.getAngle(path.waypoints[0],path.waypoints[1])
+    
+        for waypointNumber in range(1, len(path.waypoints)-1):
+
+            currentTrajectory = self.getAngle(path.waypoints[waypointNumber],path.waypoints[waypointNumber+1])
+
+            turningAngle = abs(currentTrajectory - perviousTrajectory)
+            perviousTrajectory = currentTrajectory
+            if (turningAngle > 180):
+                turningAngle = 360 - turningAngle
+
+            print(perviousTrajectory)
+
+            if turningAngle != 0:
+                new_waypoints.append(path.waypoints[waypointNumber+1])
+
+        if path.waypoints[-1] not in new_waypoints:
+            new_waypoints.append(path.waypoints[-1])
+
+        return new_waypoints
+
     # Drive to each waypoint in turn. Unfortunately we have to add
     # the planner drawer because we have to keep updating it to
     # make sure the graphics are redrawn properly.
@@ -93,16 +164,23 @@ class ControllerBase(object):
         self.pathMetrics["distanceTravelled"] = 0.0
         self.pathMetrics["totalAngleTurned"] = 0.0
 
-        rospy.loginfo('Driving path to goal with ' + str(len(path.waypoints)) + ' waypoint(s)')
+        newPath = self.simplifyPath(path)
+
+        with open("waypoint_export.txt", "w") as out_file:
+            for cell in path.waypoints:
+                out_file.writelines(str(cell.coords) + '\n')
+
+        with open("waypoint_export_new", "w") as out_file:
+            for cell in newPath:
+                out_file.writelines(str(cell.coords) + '\n')
+
+        rospy.loginfo('Driving path to goal with ' + str(len(path.waypoints)) + ' waypoint(s)' + str(len(newPath)))
         
         startTime = time.time()
 
-        print("------------------------------------------------------------------")
-        print(self.simulationTimeScaleFactor)
-
         # Drive to each waypoint in turn
-        for waypointNumber in range(0, len(path.waypoints)):
-            cell = path.waypoints[waypointNumber]
+        for waypointNumber in range(0, len(newPath)):
+            cell = newPath[waypointNumber]
             waypoint = self.occupancyGrid.getWorldCoordinatesFromCellCoordinates(cell.coords)
             rospy.loginfo("Driving to waypoint (%f, %f)", waypoint[0], waypoint[1])
             self.driveToWaypoint(waypoint)
@@ -174,3 +252,4 @@ class ControllerBase(object):
                     writer = csv.writer(write_csvfile)
                     for row in rowList:
                         writer.writerow(row)
+                        
