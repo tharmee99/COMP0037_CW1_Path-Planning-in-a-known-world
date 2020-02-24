@@ -55,6 +55,8 @@ CATKIN_IGNORE
 
 # vs code folder
 .vscode/*
+*/.vscode
+.vscode/settings.json
 
 # tex files
 *.aux
