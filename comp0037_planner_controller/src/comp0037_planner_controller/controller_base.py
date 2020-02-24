@@ -142,8 +142,6 @@ class ControllerBase(object):
             if (turningAngle > 180):
                 turningAngle = 360 - turningAngle
 
-            print(perviousTrajectory)
-
             if turningAngle != 0:
                 new_waypoints.append(path.waypoints[waypointNumber+1])
 
