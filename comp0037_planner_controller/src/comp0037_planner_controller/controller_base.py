@@ -119,15 +119,38 @@ class ControllerBase(object):
     def getAngle(self, parentCell, cell):
         
         del_y = cell.coords[1]-parentCell.coords[1]
-        del_x = cell.coords[1]-parentCell.coords[0]
+        del_x = cell.coords[0]-parentCell.coords[0]
 
         angle = atan2(del_y,del_x) * (180/pi)
 
         return angle
 
-    # def simplifyPath(self, path):
-    #     for waypointNumber in range(0, len(path.waypoints)):
+    def simplifyPath(self, path):
+        new_waypoints = []
 
+        new_waypoints.append(path.waypoints[0])
+        new_waypoints.append(path.waypoints[1])
+
+        perviousTrajectory = self.getAngle(path.waypoints[0],path.waypoints[1])
+    
+        for waypointNumber in range(1, len(path.waypoints)-1):
+
+            currentTrajectory = self.getAngle(path.waypoints[waypointNumber],path.waypoints[waypointNumber+1])
+
+            turningAngle = abs(currentTrajectory - perviousTrajectory)
+            perviousTrajectory = currentTrajectory
+            if (turningAngle > 180):
+                turningAngle = 360 - turningAngle
+
+            print(perviousTrajectory)
+
+            if turningAngle != 0:
+                new_waypoints.append(path.waypoints[waypointNumber+1])
+
+        if path.waypoints[-1] not in new_waypoints:
+            new_waypoints.append(path.waypoints[-1])
+
+        return new_waypoints
 
     # Drive to each waypoint in turn. Unfortunately we have to add
     # the planner drawer because we have to keep updating it to
@@ -141,13 +164,23 @@ class ControllerBase(object):
         self.pathMetrics["distanceTravelled"] = 0.0
         self.pathMetrics["totalAngleTurned"] = 0.0
 
-        rospy.loginfo('Driving path to goal with ' + str(len(path.waypoints)) + ' waypoint(s)')
+        newPath = self.simplifyPath(path)
+
+        with open("waypoint_export.txt", "w") as out_file:
+            for cell in path.waypoints:
+                out_file.writelines(str(cell.coords) + '\n')
+
+        with open("waypoint_export_new", "w") as out_file:
+            for cell in newPath:
+                out_file.writelines(str(cell.coords) + '\n')
+
+        rospy.loginfo('Driving path to goal with ' + str(len(path.waypoints)) + ' waypoint(s)' + str(len(newPath)))
         
         startTime = time.time()
-        
+
         # Drive to each waypoint in turn
-        for waypointNumber in range(0, len(path.waypoints)):
-            cell = path.waypoints[waypointNumber]
+        for waypointNumber in range(0, len(newPath)):
+            cell = newPath[waypointNumber]
             waypoint = self.occupancyGrid.getWorldCoordinatesFromCellCoordinates(cell.coords)
             rospy.loginfo("Driving to waypoint (%f, %f)", waypoint[0], waypoint[1])
             self.driveToWaypoint(waypoint)

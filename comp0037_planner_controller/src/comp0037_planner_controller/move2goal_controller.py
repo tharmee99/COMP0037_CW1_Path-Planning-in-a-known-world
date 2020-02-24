@@ -26,15 +26,15 @@ class Move2GoalController(ControllerBase):
         # self.angleErrorGain = rospy.get_param('angle_error_gain', 4)
 
         # Original gain values for proportional controller
-        # self.controllerVariables["distanceErrorGain"] = rospy.get_param('distance_gain', {'Kp':2,'Ki':0,'Kd':0})
-        # self.controllerVariables["angleErrorGain"] = rospy.get_param('angle_gain', {'Kp':4,'Ki':0,'Kd':0})
+        self.controllerVariables["distanceErrorGain"] = rospy.get_param('distance_gain', {'Kp':2,'Ki':0,'Kd':0})
+        self.controllerVariables["angleErrorGain"] = rospy.get_param('angle_gain', {'Kp':4,'Ki':0,'Kd':0})
 
         # Tuned values for PID controller
-        self.controllerVariables["distanceErrorGain"] = rospy.get_param('distance_gain', {'Kp':3,'Ki':0,'Kd':0.05})
-        self.controllerVariables["angleErrorGain"] = rospy.get_param('angle_gain', {'Kp':4,'Ki':0,'Kd':0.01})
+        # self.controllerVariables["distanceErrorGain"] = rospy.get_param('distance_gain', {'Kp':2,'Ki':0,'Kd':0.01})
+        # self.controllerVariables["angleErrorGain"] = rospy.get_param('angle_gain', {'Kp':3,'Ki':0,'Kd':0.01})
 
         # Tolerance for the steering angle
-        self.driveAngleErrorTolerance = math.radians(rospy.get_param('angle_error_tolerance', 1))
+        self.driveAngleErrorTolerance = math.radians(rospy.get_param('angle_error_tolerance', 0.5))
         
         # Data logging settings used for tuning of PID controller
         self.logData = True
@@ -100,6 +100,8 @@ class Move2GoalController(ControllerBase):
                 vel_msg.linear.x = max(0.0, min(self.pid_controller(distanceError,self.controllerVariables["distanceErrorGain"],afterFirstIteration,1/self.rospy_rate), 10.0))
                 vel_msg.linear.y = 0
                 vel_msg.linear.z = 0
+
+            print(vel_msg.linear.x)
 
             # angular velocity in the z-axis:
             vel_msg.angular.x = 0
