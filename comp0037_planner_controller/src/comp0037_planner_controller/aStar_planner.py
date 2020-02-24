@@ -16,6 +16,7 @@ class AStarPlanner(DynamicPlanner):
         DynamicPlanner.__init__(self, title, occupancyGrid)
 
         self.nonZeroConstant = 1
+        self.scalingFactor = 1
 
         if(heuristic.lower() not in heurstic_list):
             heuristic = "0"
@@ -36,15 +37,15 @@ class AStarPlanner(DynamicPlanner):
         elif(self.heuristics.lower() == heurstic_list[1]):
             del_x = cell.coords[0] - self.goal.coords[0]
             del_y = cell.coords[1] - self.goal.coords[1]
-            return sqrt(pow(del_x,2)+pow(del_y,2))
+            return self.scalingFactor * sqrt(pow(del_x,2)+pow(del_y,2))
             
         elif(self.heuristics.lower() == heurstic_list[2]):
             x_diff = abs(cell.coords[0]-self.goal.coords[0])
             y_diff = abs(cell.coords[1]-self.goal.coords[1])
-            return max(x_diff,y_diff) + (sqrt(2)-1)*min(x_diff,y_diff)
+            return self.scalingFactor * ( max(x_diff,y_diff) + (sqrt(2)-1)*min(x_diff,y_diff) )
 
         elif(self.heuristics.lower() == heurstic_list[3]):
-            return abs(cell.coords[0]-self.goal.coords[0]) + abs(cell.coords[1]-self.goal.coords[1])
+            return self.scalingFactor * ( abs(cell.coords[0]-self.goal.coords[0]) + abs(cell.coords[1]-self.goal.coords[1]) )
 
         else:
             return 0
