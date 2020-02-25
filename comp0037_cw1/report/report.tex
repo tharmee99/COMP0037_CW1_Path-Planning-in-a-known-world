@@ -104,23 +104,36 @@
 				\\
 				Once again the same priority queue as implemented in the greedy algorithm was utilized with changes to the priority value. In addition to that, the class \textbf{DijkstraPlanner} inherits from another class \textbf{DynamicPLanner}. This is due to the fact that Dijkstra and A* planners are both dynamic planners and not only use the same queue but only differ by the addition of heuristics. Therefore, the priority queue and functions associated with it are common to both and can therefore be shared. Additionally, the \textbf{resolveDuplicate} function is also shared amongst the two planners. In the case a cell is revisited, the existing cost to go and the new proposed cost to go are compared. If the new cost to go is smaller, then the cell's parent and cost to go are updated to reflect this. 
 				\\
-				The main advantage of utilizing Dijkstra's is the fact that the optimality of the path is guaranteed. However the algorithm is computationally intense having a time complexity of $O(E\log(V)+E)$ where V are vertices/cells and E are edges. 
+				The main advantage of utilizing Dijkstra's is the fact that the optimality of the path is guaranteed. In addition to this, Dijkstra computes the path to the goal from not only the start cell but all cells that have been visited. This means that if at a later date another path to the same goal is required, the algorithm doesn't have to restart from beginning. The main disadvantage is that the algorithm is computationally intense having a time complexity of $O(E\log(V)+E)$ where V are vertices/cells and E are edges. 
 				
 			\subsubsection{A* Search}
 			
-				This algorithm works in a similar way to Dijkstra’s however it additionally uses a heuristic to influence the way it selects which cells to explore and visit. Heuristics used in our assignments are: a non-negative constant value, the euclidean distance to the goal, the octile distance to the goal and the Manhattan distance to the goal. The algorithm is similar to Dijkstra and as previously discussed the two planners inherit from the same \textbf{DynamicPlanner} class. When adding a cell to the priority queue, the heuristic value is computed for that cell and it is summed to the L-stage additive cost. This means that the heuristic influences the position of the cell in the priority queue and therefore may change the order in which cells are considered. The heuristics bias the considered cells such that cells closer to the goal are considered first meaning that fewer cells my be visited in the process of finding the final path. Given that the chosen heuristic is non-zero and never overestimates the cost to the goal (as shown in Eq. 1.1), the heuristic is said to be admissible. In the case that a heuristic is admissible, it also follows that the computed path will be the optimal path. 	
+				This algorithm works in a similar way to Dijkstra’s however it additionally uses a heuristic to influence the way it selects which cells to explore and visit. Heuristics used in our assignments are: a non-negative constant value, the euclidean distance to the goal, the octile distance to the goal and the Manhattan distance to the goal. The algorithm is similar to Dijkstra and as previously discussed the two planners inherit from the same \textbf{DynamicPlanner} class. When adding a cell to the priority queue, the heuristic value is computed for that cell and it is summed to the L-stage additive cost. This means that the heuristic influences the position of the cell in the priority queue and therefore may change the order in which cells are considered. The heuristics bias the considered cells such that cells closer to the goal are considered first meaning that fewer cells my be visited in the process of finding the final path.
+				\\
+				The euclidean distance is the straight line distance between two points expressed as shown in Eq. X. 
 				
 				\begin{equation}
-					
+					\hat{G}_{k} = \sqrt{(x_k-x_G)^2+(y_k-y_G)^2}
 				\end{equation}
 				
-				Each cell gets assigned a heuristic value. When the algorithm starts, the starting cell is specified. The algorithm then explores its neighbours of the selected cell. It ads them to the queue in the order of the combined value of distance from to start and heuristic. The algorithm will then move onto exploring from the cell that is first in the queue. It will add the neighbours of that cell into the same queue based on the combined parameter. If the algorithm visits a cell which has already been visited, it will compare the travel distances from the start and ignore the heuristic value to select which path is best and editing the entry in the queue. Once the cell and all its connections are fully explored, it is removed from the queue. Once the algorithm finds the target cell, it has found the shortest path to it. 
+				Depending on robot movement restrictions, the heuristic may be altered to take this into account. For example, the octile distance heuristic
+				
+				\begin{equation}
+				\hat{G}_{k} = max(|x_k-x_G|,|y_k-y_G|) + (\sqrt{2}-1)min(|x_k-x_G|,|y_k-y_G|)
+				\end{equation}
+				
+				\begin{equation}
+				\hat{G}_{k} = |x_k-x_G|+|y_k-y_G|
+				\end{equation}
+				
 				\\
-				A* algorithm can also be adjusted by weighing the heuristic in the additive cost. This will adjust the way that A* search making it more inadmissable .
+				Given that the chosen heuristic is non-zero and never overestimates the cost to the goal, the heuristic is said to be admissible. In the case that a heuristic is admissible, it also follows that the computed path will be the optimal path. The most optimal heuristic will be the one that doesn't just approximate the distance to the goal but rather is exactly equal to the cost to the goal. In this case, the number of cells visited will be minimal and the optimal path will also be identified. However, this is non feasible as computing the actual cost to goal is computationally intense. In the case a heuristic is inadmissible, the optimality of the path is not guaranteed.
 				\\
-				A* has a massive advantage over other algorithms which is the weighting of the cells which allows the algorithm also consider distance to the target in deciding where to move to. This allows the algorithm to prioritise the queue based on the heuristic. 
+				In addition to the type of heuristic used, the A* planner can be further customized and tuned by using a weighting parameter on the heuristic. This weighting parameter influences the number of cells searched by the planner and the optimality of the found path. By choosing a weighting factor greater than 1, the algorithm prioritizes cells closer to the goal. However this also means that the weighted heuristic may become inadmissible and therefore not necessarily derive the optimal path. On the other hand, a weighting factor lower than 1 explores more cells than the un-weighted heuristic but will return the same optimal path. This additional exploration of cells may only be useful, if paths from those cells to the goal are required at a later time. 
 				\\
-				Put time comp here!!!
+				As previously discussed, the implementation of the A* algorithm is very similar to the implementation of Dijkstra. The main difference is the addition of the \textbf{calc\_heuristics} function that computes the heuristics. The choice of heuristic is defined in the launch file and can be determined as a argument when launching the node using roslaunch.
+				\\
+				The time complexity of the A* algorithm can be expressed as $O(E)$ where E is the total number of edges in the graph.
 				
 		\subsection{Algorithm Performance}
 			\subsubsection{Metrics to Quantify Performance}
