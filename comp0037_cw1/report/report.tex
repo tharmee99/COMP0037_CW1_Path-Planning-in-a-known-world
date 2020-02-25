@@ -126,7 +126,6 @@
 				\hat{G}_{k} = |x_k-x_G|+|y_k-y_G|
 				\end{equation}
 				
-				\\
 				Given that the chosen heuristic is non-zero and never overestimates the cost to the goal, the heuristic is said to be admissible. In the case that a heuristic is admissible, it also follows that the computed path will be the optimal path. The most optimal heuristic will be the one that doesn't just approximate the distance to the goal but rather is exactly equal to the cost to the goal. In this case, the number of cells visited will be minimal and the optimal path will also be identified. However, this is non feasible as computing the actual cost to goal is computationally intense. In the case a heuristic is inadmissible, the optimality of the path is not guaranteed.
 				\\
 				In addition to the type of heuristic used, the A* planner can be further customized and tuned by using a weighting parameter on the heuristic. This weighting parameter influences the number of cells searched by the planner and the optimality of the found path. By choosing a weighting factor greater than 1, the algorithm prioritizes cells closer to the goal. However this also means that the weighted heuristic may become inadmissible and therefore not necessarily derive the optimal path. On the other hand, a weighting factor lower than 1 explores more cells than the un-weighted heuristic but will return the same optimal path. This additional exploration of cells may only be useful, if paths from those cells to the goal are required at a later time. 
