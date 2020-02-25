@@ -65,14 +65,14 @@
 		\subsection{Path Planning Algorithms}
 				
 			\begin{figure}[H]
-				\renewcommand\thefigure{1.1}
+				\label{pc}
 				\centering
 				
 				\includegraphics[scale=0.6]{images/general_forward_search_pseudocode.png}
 				\caption{The general forward search algorithm pseudo-code. }
 			\end{figure}
 			
-			All of the path planning algorithms have the same backbone and can be summed up into 15 lines of pseudo-code shown in Fig 1.1. This algorithm describes the process of finding a path from a cell ($x_I$) to a goal cell ($X_G$). This general algorithm is called the general forward search algorithm and is implemented in the \textbf{GeneralForwardSearchAlgorithm} class. All planners that are implemented inherit from this class through the \textbf{CellBasedForwardSearch} class. The search algorithm is similar for all the planners and has also been implemented in the same \textbf{GeneralForwardSearchAlgorithm} class. What differs between the planners is the type of queue that is used and the implementation of the \textbf{resolveDuplicate} function. These properties and functions are defined in the classes of each of the individual planners. It should also be noted that a class named \textbf{PlannerBase} is also present. This function consists of abstract functions and variable decelerations as well as functions required for visualisation of the planned path. The high-level working of the planners we implemented and their properties are described below.
+			All of the path planning algorithms have the same backbone and can be summed up into 15 lines of pseudo-code shown in Fig. \ref{pc} This algorithm describes the process of finding a path from a cell ($x_I$) to a goal cell ($X_G$). This general algorithm is called the general forward search algorithm and is implemented in the \textbf{GeneralForwardSearchAlgorithm} class. All planners that are implemented inherit from this class through the \textbf{CellBasedForwardSearch} class. The search algorithm is similar for all the planners and has also been implemented in the same \textbf{GeneralForwardSearchAlgorithm} class. What differs between the planners is the type of queue that is used and the implementation of the \textbf{resolveDuplicate} function. These properties and functions are defined in the classes of each of the individual planners. It should also be noted that a class named \textbf{PlannerBase} is also present. This function consists of abstract functions and variable decelerations as well as functions required for visualisation of the planned path. The high-level working of the planners we implemented and their properties are described below.
 			
 			\subsubsection{FIFO - Breadth First Search}
 	
@@ -110,21 +110,24 @@
 			
 				This algorithm works in a similar way to Dijkstra’s however it additionally uses a heuristic to influence the way it selects which cells to explore and visit. Heuristics used in our assignments are: a non-negative constant value, the euclidean distance to the goal, the octile distance to the goal and the Manhattan distance to the goal. The algorithm is similar to Dijkstra and as previously discussed the two planners inherit from the same \textbf{DynamicPlanner} class. When adding a cell to the priority queue, the heuristic value is computed for that cell and it is summed to the L-stage additive cost. This means that the heuristic influences the position of the cell in the priority queue and therefore may change the order in which cells are considered. The heuristics bias the considered cells such that cells closer to the goal are considered first meaning that fewer cells my be visited in the process of finding the final path.
 				\\
-				The euclidean distance is the straight line distance between two points expressed as shown in Eq. X. 
+				The euclidean distance is the straight line distance between two points expressed as shown in Eq. \ref{euc}
 				
 				\begin{equation}
+					\label{euc}
 					\hat{G}_{k} = \sqrt{(x_k-x_G)^2+(y_k-y_G)^2}
 				\end{equation}
 				
-				Depending on robot movement restrictions, the heuristic may be altered to take this into account. For example, the octile distance is the minimal distance using horizontal, vertical and 45 degree diagonal trajectories. This corresponds to a robot that can move in 8 directions (N, NE, E, SE, S, etc...). The expression for computing this distance is shown in Eq. X.
+				Depending on robot movement restrictions, the heuristic may be altered to take this into account. For example, the octile distance is the minimal distance using horizontal, vertical and 45 degree diagonal trajectories. This corresponds to a robot that can move in 8 directions (N, NE, E, SE, S, etc...). The expression for computing this distance is shown in Eq. \ref{oct}.
 				
 				\begin{equation}
-				\hat{G}_{k} = max(|x_k-x_G|,|y_k-y_G|) + (\sqrt{2}-1)min(|x_k-x_G|,|y_k-y_G|)
+					\label{oct}
+					\hat{G}_{k} = max(|x_k-x_G|,|y_k-y_G|) + (\sqrt{2}-1)min(|x_k-x_G|,|y_k-y_G|)
 				\end{equation}
 				
-				Similarly to the octile distance, the Manhattan distance computes the shortest distance between two points using only vertical and horizontal trajectories. This corresponds to a robot that can move in 4 directions (N, E, S, W). The expression to compute this distance is shown in Eq. X. 
+				Similarly to the octile distance, the Manhattan distance computes the shortest distance between two points using only vertical and horizontal trajectories. This corresponds to a robot that can move in 4 directions (N, E, S, W). The expression to compute this distance is shown in Eq. \ref{man}. 
 				
 				\begin{equation}
+				\label{man}
 				\hat{G}_{k} = |x_k-x_G|+|y_k-y_G|
 				\end{equation}
 				
@@ -154,7 +157,7 @@
 			\subsubsection{Evaluating Performance of Algorithms}
 			
 				\begin{figure}[H]
-					\renewcommand\thefigure{1.2}
+					\label{numCells}
 					\centering
 					
 					\includegraphics[scale=0.3]{"images/numberOfCellsVisited for each algorithm.png"}
@@ -162,7 +165,7 @@
 				\end{figure}
 			
 				\begin{figure}[H]
-					\renewcommand\thefigure{1.3}
+					\label{pathCost}
 					\centering
 					
 					\includegraphics[scale=0.3]{"images/pathTravelCost for each algorithm.png"}
@@ -187,7 +190,7 @@
 				\\
 				\textbf{A* Algorithm}
 				\\ 
-				The A* Algorithm was implemented with the 4 heuristics that were previously discussed. When the A* algorithm has a heuristic of zero, the planner is identical to Dijkstra's Algorithm. With the addition of a constant heuristics (i.e. a non-negative constant), the A* algorithm is still identical to Dijkstra's. This is due to the fact that there is no favouring in which cell should be considered first as all cells are assigned the same heuristic values. Even though these scenarios were simulated and observed for all of the given maps, these variations of A* are not illustrated in the graphs in Fig. X.X to avoid repetition. It was confirmed that these cases were exactly identical to A* and one variation of a constant with value of 5 is shown for comparison.
+				The A* Algorithm was implemented with the 4 heuristics that were previously discussed. When the A* algorithm has a heuristic of zero, the planner is identical to Dijkstra's Algorithm. With the addition of a constant heuristics (i.e. a non-negative constant), the A* algorithm is still identical to Dijkstra's. This is due to the fact that there is no favouring in which cell should be considered first as all cells are assigned the same heuristic values. Even though these scenarios were simulated and observed for all of the given maps, these variations of A* are not illustrated in the graphs in Fig. \ref{numCells} and Fig. \ref{pathCost} to avoid repetition. It was confirmed that these cases were exactly identical to A* and one variation of a constant with value of 5 is shown for comparison.
 				\\
 				The euclidean distance heuristic acted as intended. Due to its admissible nature, the addition of the heuristic did not alter the path cost in any of the cases. However it did alter the number of cells visited; In all of the cases, the A* algorithm with euclidean distance heuristic performed better (having visited less cells) than Dijkstra's Algorithm. This is to be expected as the whole purpose of heuristics is to limit the number of cells visited by biasing cells to be higher up in the priority queue. However, as the robot in our case is able to move in 8 directions (octile movement), the euclidean heuristics significantly under-estimates the distance to the goal. Therefore the heuristic is not optimal.
 				\\
@@ -197,7 +200,7 @@
 				
 			\subsubsection{Planner Performance Prognosis}
 			
-				Out of the 4 heuristics available, the constant provides the same performance as Dijkstra’s, thus it gives an optimal solution in all the cases however it must explore many cells for it to happen, making the algorithm slow running. The Euclidean distance will also give an optimal solution in all possible maps. However it will explore the most cells out of the remaining heuristics. The octile distance will give the as good of performance in terms the path being optimal as Euclidean. It will have a better performance in terms of the number of cells explored. All of the aforementioned heuristics are admissible. Manhattan distance heuristic provides the best performance in terms of number of nodes explored, however it is an inadmissible heuristic thus there is a possibility of it giving a non optimal path which can be seen by closely studying the graphs in Fig. X.X.
+				Out of the 4 heuristics available, the constant provides the same performance as Dijkstra’s, thus it gives an optimal solution in all the cases however it must explore many cells for it to happen, making the algorithm slow running. The Euclidean distance will also give an optimal solution in all possible maps. However it will explore the most cells out of the remaining heuristics. The octile distance will give the as good of performance in terms the path being optimal as Euclidean. It will have a better performance in terms of the number of cells explored. All of the aforementioned heuristics are admissible. Manhattan distance heuristic provides the best performance in terms of number of nodes explored, however it is an inadmissible heuristic thus there is a possibility of it giving a non optimal path which can be seen by closely studying the graphs in Fig. \ref{pathCost}.
 				\\
 				There is a possibility of creating a combination of these heuristics by averaging them out. The goal would be to reduce the number of nodes explored by the A* algorithm. For this it is possible to average out the heuristic values for Octile and Manhattan distances, giving a value in between. This could potentially create a better heuristic than octile in terms of cells explored, however there is no way of telling if it will be an admissible heuristic. Thus the octile distance would be the best heuristic to use as it will guarantee an optimal solution given a weighting of 1. 
 
@@ -216,11 +219,20 @@
 		\subsection{Comparison of planners}
 			The planners chosen to obtain the path in this example were the A* planners with octile and Manhattan heuristics. These were chosen as octile was the best performing planner that also returned the optimal path while Manhattan seemed to be a good compromise between optimality and number of cells visited. Similarly, the octile heuristic with a weighting of 2 is also a compromise between optimality and cells visited. Therefore these three planners were used. 
 			\\
-			From the graphs below it is clearly visible that the A* planner with the weighted octile heuristic is the best planner achieving on average the best times out of the three chosen planners. 
+			From the graphs below in Fig. \ref{fig21} it is clear to see that the A* planner with the Manhattan heuristic is the best planner. Despite the utilized heuristic not being admissible, the planner completed most of the goals in the shortest time suggesting that the computed path was most optimal out of the three for the robot to traverse. 
+			\\
+			The predicted distance travelled differed from the actual distance travelled by less than 2m. In all instanced the actual distance was greater than the predicted. I suspect that this difference in distance travelled is caused by the overshooting and correcting of the robot. In addition to this, any non-straight paths the robot took due to an incorrect driving angle will also result in a slightly increased distance travelled. 
+			\\
+			Furthermore the angle turned is also greater than the predicted angle turned. This may be due to similar reasons with overshooting and correction of driving angle. However the offset seemed to be quite large for this to be the case and during testing with a very stable controller the offset still occurred. The reason for this difference in the angle turned is due to the lack of consideration of the initial orientation of the robot. The offset for the first goal was consistently at 45 degrees which would explained by the robot having to adjust for a orientation of -90 degrees to a driving angle to -135 degrees.
 			
-			\includegraphics[scale=0.18]{images/compare_robot_A_Algorithm_Heuristic_2Octile.png}
-			\includegraphics[scale=0.18]{images/compare_robot_A_Algorithm_Heuristic_Octile.png}
-			\includegraphics[scale=0.18]{images/compare_robot_A_Algorithm_Heuristic_Manhattan.png}
+			\begin{figure}[H]
+				\centering
+				\label{fig21}
+				\includegraphics[scale=0.18]{images/compare_robot_A_Algorithm_Heuristic_2Octile.png}
+				\includegraphics[scale=0.18]{images/compare_robot_A_Algorithm_Heuristic_Octile.png}
+				\includegraphics[scale=0.18]{images/compare_robot_A_Algorithm_Heuristic_Manhattan.png}
+				\caption{The figures comparing the metrics: distance travelled by the robot, total angle turned and the time taken to complete the path for the improved new controller and the old controller initially provided.}
+			\end{figure}
 		\subsection{Description of Robot Controller}
 		After implementing the algorithm and evaluating the different paths obtained from the different path planning algorithms the STDR simulation test were performed. On the first trial it was noticed that the robot followed the path, but it was rather very slow. It was realised that this was due to the deliberately inefficient controller provided and hence efforts were put into attempting to improve the controller.
 		
@@ -247,9 +259,13 @@
 		
 		Usually the values of these gains are determined by tuning them and observing their step response using tools like MATLAB and Simulink. However, without knowing the model of the robot it was not possible to use these tools to tune the gains. Therefore, we adopted the method of empirical gain tuning and we systematically increased the gains of P, D and I components of the controller in the respective order till satisfactory improvement was achieved. The step repsonse plots and the error tracking plots were used to compare and determine any improvement in performance. A much more detailed analysis and various the steps we went through for tuning the gains can be found in the notebooks referenced in Appendix \ref{appendix:Controller-tuning}.
 		
-		\includegraphics[scale=0.3]{images/compare_both.png}
-		
-		Figure X.X, shows that the distance error and orientation error tracks 0 quicker than the proportional controller initially provided to us. The previous comparison in Figure X.X of different metrics for the old and new controller also show a huge improvement in time taken to travel the path (Note: that these measurements were taken with the parameter \textbf{'time\_scale\_factor'} (defined in \textbf{time\_server\_node.py}) set to 1.)
+		\begin{figure}[H]
+			\label{fig22}
+			\centering
+			\includegraphics[scale=0.3]{images/compare_both.png}
+			\caption{Error tracking graphs for the distance and orientation controllers showing the reduction in time to reach an error of 0 of new controller in comparison to the old controller.}
+		\end{figure}
+		Figure \ref{fig22}, shows that the distance error and orientation error tracks 0 quicker than the proportional controller initially provided to us. The previous comparison in Figure \ref{fig21} of different metrics for the old and new controller also show a huge improvement in time taken to travel the path (Note: that these measurements were taken with the parameter \textbf{'time\_scale\_factor'} (defined in \textbf{time\_server\_node.py}) set to 1.)
 		
 		Moreover, it is known that sampling rate can be a factor that affects the performance of the controller. If the sampling rate is not high enough to keep up with the rapid change in error value it can affect stability of the system. Practically, this is a known hardware limitation. However, in the case of this simulation, on experimenting with different values it was noticed that anything above 20Hz would give inconsistent time periods. At the current sampling rate the pose update, can be seen as increasing in signal is represented coarsely by the pose update. This also contributed to making it difficult to improve the stability of the function.
 		
@@ -272,12 +288,12 @@
 	\section{Performance Metrics Analysis}
 	\label{appendix:metrics}
 	\subsection{Planner Performance Metrics}
-	All graphs associated to the experiments related to to controller tuning can be found in the notebook named \textbf{visualise\_planner\_metrics.ipynb}. The file can be found in the path: \textit{'comp0037\_cw1\\exports\\'}
+	All graphs associated to the experiments related to to controller tuning can be found in the notebook named \textbf{visualise\_planner\_metrics.ipynb}. The file can be found in the path: \textit{'comp0037\_cw1\\exports'}
 	\subsection{Robot Simulation Performance Metrics}
-	All graphs associated to the experiments related to to controller tuning can be found in the notebook named \textbf{visualise\_robot\_performance\_metrics.ipynb}. The file can be found in the path: \textit{'comp0037\_cw1\\exports\\'}
+	All graphs associated to the experiments related to to controller tuning can be found in the notebook named \textbf{visualise\_robot\_performance\_metrics.ipynb}. The file can be found in the path: \textit{'comp0037\_cw1\\exports'}
 	\section{Tuning the Controller}
 	\label{appendix:Controller-tuning}
-	All graphs associated to the experiments related to to controller tuning can be found in the notebook named \textbf{controller\_tuning\_and\_analysis.ipynb}. The file can be found in the path: \textit{'comp0037\_cw1\\exports\\'}
+	All graphs associated to the experiments related to to controller tuning can be found in the notebook named \textbf{controller\_tuning\_and\_analysis.ipynb}. The file can be found in the path: \textit{'comp0037\_cw1\\exports'}
 	
 
 	
