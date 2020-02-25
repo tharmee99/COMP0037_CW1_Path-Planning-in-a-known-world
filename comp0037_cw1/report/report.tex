@@ -156,7 +156,18 @@
 				The Breadth First Algortihm performed poorly. The path cost of the derived path wasn't always optimal and especially on maps with a terrain cost superimposed, the algorithm performed poorly. In addition to this, the planner visits a large number of cells in comparison to the path cardinality implying a inefficient search algorithm. How-ever the maximum cardinality of the queue was relatively small suggesting a relatively small memory usage. Due to the simple nature of the planner, the complexity of the path was low resulting in minimal turns.
 				\\
 				\textbf{LIFO - Depth First Search}
-				This algorithm was by far the worst performing algorithm. This algorithm consistently returned the path that had the highest path cost out of all the planning algorithms. Additionally, it also had exceptionally large number of turns and bends. However, the number of cells traversed was comparable to the other algorithms and relatively low for the given path cardinality. 
+				This algorithm was by far the worst performing algorithm. This algorithm consistently returned the path that had the highest path cost out of all the planning algorithms. Additionally, it also had exceptionally large number of turns and bends. However, the number of cells traversed was comparable to the other algorithms and relatively low for the given path cardinality. Compared to the performance of the other planners, the depth first planner is completely inefficient and returns a chaotic path.
+				\\
+				\textbf{Greedy Algorithm}
+				The greedy algorithm performed extremely well in most cases. It consistently had the lowest number of cells visited while searching for the path. However it had a slightly higher path cost which is most prominent in the lines\_terrain map. This is to be expected as the greedy algorithm (similar to breadth and depth first) do not have a notion of path cost while they are searching for the path. This is most prominent when the terrain cost isn't uniform. The maximum queue cardinality was neither exceptionally high nor exceptionally low when compared to that of the other planners that were implemented. 
+				\\
+				\textbf{Dijkstra's Algorithm}
+				Dijkstra's Algorithm produced the path with the minimal path cost as expected. This means that it finds the optimal path. Besides this, the algorithm visited a relatively large number of cells while searching for the path meaning that the search algorithm is slightly inefficient. 
+				\\
+				\textbf{A* Algorithm} 
+				The A* Algorithm was implemented with the 4 heuristics that were previously discussed. When the A* algorithm has a heuristic of zero, the planner is identical to Dijkstra's Algorithm. With the addition of a constant heuristics (i.e. a non-negative constant), the A* algorithm is still identical to Dijkstra's. This is due to the fact that there is no favouring in which cell should be considered first as all cells are assigned the same heuristic values. Even though these scenarios were simulated and observed for all of the given maps, these variations of A* are not illustrated in the graphs in Fig. X.X to avoid repetition. It was confirmed that these cases were exactly identical to A* and one variation of a constant with value of 5 is shown for comparison.
+				\\
+				
 			\subsubsection{Planner Performance Prognosis}
 			
 				Describe the metrics used to compare performance \\
