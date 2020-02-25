@@ -62,8 +62,8 @@
 	%%%%%%%%%%% PART 1 %%%%%%%%%%%%%%%%%
 	\section{Implement and Investigate Properties of Path Planning Algorithms}
 		
-	\subsection{Path Planning Algorithms}
-			
+		\subsection{Path Planning Algorithms}
+				
 			\begin{figure}[H]
 				\renewcommand\thefigure{1.1}
 				\centering
@@ -75,51 +75,67 @@
 			All of the path planning algorithms have the same backbone and can be summed up into 15 lines of pseudo-code shown in Fig 1.1. This algorithm describes the process of finding a path from a cell ($x_I$) to a goal cell ($X_G$). This general algorithm is called the general forward search algorithm and is implemented in the \textbf{GeneralForwardSearchAlgorithm} class. All planners that are implemented inherit from this class through the \textbf{CellBasedForwardSearch} class. The search algorithm is similar for all the planners and has also been implemented in the same \textbf{GeneralForwardSearchAlgorithm} class. What differs between the planners is the type of queue that is used and the implementation of the \textbf{resolveDuplicate} function. These properties and functions are defined in the classes of each of the individual planners. It should also be noted that a class named \textbf{PlannerBase} is also present. This function consists of abstract functions and variable decelerations as well as functions required for visualisation of the planned path. The high-level working of the planners we implemented and their properties are described below.
 			
 			\subsubsection{FIFO - Breadth First Search}
-
-				This algorithm works by selecting a particular node and exploring its neighbours first. It would then pivot around those neighbours to explore each of their neighbours. Layer by layer it will explore all the nodes on the graph network until it reaches the goal. The next nodes to be considered are chosen by first considering the node directly underneath and then considering the neighbouring nodes going anti-clockwise. This way of allocating the next set of nodes to be considered, is the same for all algorithms. The Breadth First Algorithm uses a queue to keep track of the order of the exploration in the network. If a particular node shows itself twice to the algorithm, it will use the first instance of it ignoring the second. The first path that reaches the finishing node is the final output path, no mater of the cost. The name First in First Out (FIFO) comes from the type of queue implemented in this search algorithm. The next node to be considered at any point is the one that was added the first out of all the nodes in the queue.
+	
+				This algorithm works by selecting a particular cell and exploring its neighbours first. It would then pivot around those neighbours to explore each of their neighbours. Layer by layer it will explore all the cells on the graph network until it reaches the goal. The next cells to be considered are chosen by first considering the cell directly underneath and then considering the neighbouring cells going anti-clockwise. This way of allocating the next set of cells to be considered, is the same for all algorithms. The Breadth First Algorithm uses a queue to keep track of the order of the exploration in the network. If a particular cell shows itself twice to the algorithm, it will use the first instance of it ignoring the second. The first path that reaches the finishing cell is the final output path, no mater of the cost. The name First in First Out (FIFO) comes from the type of queue implemented in this search algorithm. The next cell to be considered at any point is the one that was added the first out of all the cells in the queue.
 				\\
 				The Breadth First Search Algorithm utilizes a normal unsorted queue and was implemented using the python \textbf{deque} class. For the pushing and popping of cells, the in-built \textbf{append} and \textbf{popleft} functions were utilized. In the case a cell that was already visited is re-visited in the Breadth First Search, nothing is considered. Therefore the \textbf{resolveDuplicate} function is an empty function in this case. 
 				\\
-				The biggest advantage of FIFO is that it will never get stuck in a blind alley. If there is a solution it will find it. If there are multiple solutions, it will find one with the least steps. The memory usage can be large as it stores all the nodes that it visits. If the solution is far, it might take a lot of time to find, as well as that the FIFO algorithm does not guarantee optimality. In the worst case scenario with the FIFO algorithm will consider every possible node and edge. Therefore the complexity can be expressed as O(N+E) where N is the total number of nodes and E is the total number of edges in the graph. 
+				The biggest advantage of FIFO is that it will never get stuck in a blind alley. If there is a solution it will find it. If there are multiple solutions, it will find one with the least steps. The memory usage can be large as it stores all the cells that it visits. If the solution is far, it might take a lot of time to find, as well as that the FIFO algorithm does not guarantee optimality. In the worst case scenario with the FIFO algorithm will consider every possible cell and edge. Therefore the complexity can be expressed as $O(V+E)$ where V is the total number of vertices/cells and E is the total number of edges in the graph. 
 			
 			\subsubsection{LIFO - Depth First Search}
 			
-				This algorithm is very similar to the Breadth First Search. Starting from the initial cell, the algorithm adds cells to the queue in the same fashion as previously described. Where Depth First differs is in the fact that instead of using a first in first out queue, a last in first out queue is utilized. As a result at any given moment the next cell to be considered is the last one that was added to the queue. 
+				This algorithm is very similar to the Breadth First Search. Starting from the initial cell, the algorithm adds cells to the queue in the same fashion as previously described. Where Depth First differs is in the fact that instead of using a first in first out queue, a last in first out (LIFO) queue is utilized. As a result at any given moment the next cell to be considered is the last one that was added to the queue. 
 				\\
-				The depth first algorithm 
+				The depth first algorithm utilizes a normal python \textbf{list} class alongside the \textbf{pop} and \textbf{append} functions. Once again, in the event a cell is revisited the first instance is considered. This results in an empty implementation of \textbf{resolveDuplicate}. 
 				\\
-				Similarly to the Breadth First Algorithm, in the worst case scenario the Depth first algorithm will consider each node of the graph. This means that once again the complexity of the algorithm can be expressed as O(N+E) where N is the total number of nodes and E is the total number of edges in the graph.
+				Once again, the depth first algorithm does not grantee the optimal path. In fact, due to the nature of the LIFO queue, the computed paths tend to be chaotic with many zig-zag features. Similarly to the Breadth First Algorithm, in the worst case scenario the Depth first algorithm will consider each cell of the graph. This means that once again the complexity of the algorithm can be expressed as $O(V+E)$ where V is the total number of vertices/cells and E is the total number of edges in the graph.
 			
 			\subsubsection{Greedy Search}
-				The Greedy Search Algorithm starts at the first node and adds neighbouring nodes to the queue. The type of queue used in this algorithm is a priority queue with the priority value being the euclidean distance between the node and the goal. This means that the nodes in the queue are sorted by their euclidean distance to the goal. As a result when a node is popped from the queue it will be the node with the lowest euclidean distance to the goal (out of the nodes in the queue). As a result the algorithm will consider the cells closer to the goal first.
+			
+				The Greedy Search Algorithm starts at the first cell and adds neighbouring cells to the queue. The type of queue used in this algorithm is a priority queue with the priority value being the euclidean distance between the cell and the goal. This means that the cells in the queue are sorted by their euclidean distance to the goal. As a result when a cell is popped from the queue it will be the cell with the lowest euclidean distance to the goal (out of the cells in the queue). As a result the algorithm will consider the cells closer to the goal first. This can drastically reduce the number of cells that are considered resulting in lower computational requirement.
 				\\
-				The biggest advantage of the greedy algorithm is its easy implementation and its efficiency in simple cases. In maps with minimal/no obstructions, the greedy algorithm is able to find a path with significantly fewer cells visited. However the optimality of the path is not guaranteed.
+				The greedy algorithm was implemented using a priority queue from the \textbf{PriorityQueue} library. Along with the built-in \textbf{put}, \textbf{get} and \textbf{empty} functions it was relatively easy to implement the priority queue and thereby the greedy algorithm. Once again in the case a cell is revisited nothing is done, meaning that the \textbf{resolveDuplicate} function is empty.
 				\\
-				Put time comp here!!!
+				The biggest advantage of the greedy algorithm is its easy implementation and its efficiency in simple cases. In maps with minimal/no obstructions, the greedy algorithm is able to find a path with significantly fewer cells visited compared to breadth first and depth first planners. However the optimality of the path is not guaranteed.
+				
 			\subsubsection{Dijkstra's}
-				This algorithm works by first setting the values for distances to every node to infinity. Once the starting node is specified, its distance value is set to zero. The algorithm then explores the neighbours of the starting node and records the distance to each. Once this is done, the algorithm will then pivot on the most promising node (the node which has the shortest distance from the previous one, exploring its neighbours. If it finds that there is a shorter path to a node that it has found distance to before, it will replace the old distance with the new one and record the new path to it. Once it reaches the target node with the shortest distance possible it will mark that path as the optimal one. 
+			
+				This algorithm works by first setting the values for distances to every cell to infinity. Once the starting cell is specified, its cost to go value is set to zero and it is set to have no parent cell. The algorithm then explores the neighbours of the starting cell and records the distance to each. Once this is done, the neighbouring cells are added to the queue which is once again a priority queue with the priority value being the cost to go to the cell. The next cell to be considered is the cell with the lowest cost to go (from the cells in the priority queue). The algorithm will continue until the queue is empty. The cost to go is calculated using the L-stage additive cost which considers the terrain cost as well as edge costs that are present. 
 				\\
-				Dijkstra's will always find the shortest path. It may however take a much longer time to do so as it performs blind search thus exploring nodes that go away from the goal node. 
+				Once again the same priority queue as implemented in the greedy algorithm was utilized with changes to the priority value. In addition to that, the class \textbf{DijkstraPlanner} inherits from another class \textbf{DynamicPLanner}. This is due to the fact that Dijkstra and A* planners are both dynamic planners and not only use the same queue but only differ by the addition of heuristics. Therefore, the priority queue and functions associated with it are common to both and can therefore be shared. Additionally, the \textbf{resolveDuplicate} function is also shared amongst the two planners. In the case a cell is revisited, the existing cost to go and the new proposed cost to go are compared. If the new cost to go is smaller, then the cell's parent and cost to go are updated to reflect this. 
 				\\
-				This search runs in a time complexity of O(E*log(V)), where V are vertices and E are edges. 
+				The main advantage of utilizing Dijkstra's is the fact that the optimality of the path is guaranteed. However the algorithm is computationally intense having a time complexity of $O(E\log(V)+E)$ where V are vertices/cells and E are edges. 
+				
 			\subsubsection{A* Search}
-				This algorithm works in a similar way to dijkstara’s however it additionally uses a heuristic to affect the way it selects which nodes to explore and visit. Heuristics used in our assignments are: 1. A non-negative constant value c, 2. The Euclidean Distance to the goal, 3. The Octile Distance to the goal and 4. Manhattan Distance to the goal. Each node gets assigned a heuristic value. When the algorithm starts, the starting node is specified. The algorithm then explores its neighbours of the selected node. It ads them to the queue in the order of the combined value of distance from to start and heuristic. The algorithm will then move onto exploring from the node that is first in the queue. It will add the neighbours of that node into the same queue based on the combined parameter. If the algorithm visits a node which has already been visited, it will compare the travel distances from the start and ignore the heuristic value to select which path is best and editing the entry in the queue. Once the node and all its connections are fully explored, it is removed from the queue. Once the algorithm finds the target node, it has found the shortest path to it. 
+			
+				This algorithm works in a similar way to Dijkstra’s however it additionally uses a heuristic to influence the way it selects which cells to explore and visit. Heuristics used in our assignments are: a non-negative constant value, the euclidean distance to the goal, the octile distance to the goal and the Manhattan distance to the goal. The algorithm is similar to Dijkstra and as previously discussed the two planners inherit from the same \textbf{DynamicPlanner} class. When adding a cell to the priority queue, the heuristic value is computed for that cell and it is summed to the L-stage additive cost. This means that the heuristic influences the position of the cell in the priority queue and therefore may change the order in which cells are considered. The heuristics bias the considered cells such that	
+				
+				Each cell gets assigned a heuristic value. When the algorithm starts, the starting cell is specified. The algorithm then explores its neighbours of the selected cell. It ads them to the queue in the order of the combined value of distance from to start and heuristic. The algorithm will then move onto exploring from the cell that is first in the queue. It will add the neighbours of that cell into the same queue based on the combined parameter. If the algorithm visits a cell which has already been visited, it will compare the travel distances from the start and ignore the heuristic value to select which path is best and editing the entry in the queue. Once the cell and all its connections are fully explored, it is removed from the queue. Once the algorithm finds the target cell, it has found the shortest path to it. 
 				\\
 				A* algorithm can also be adjusted by weighing the heuristic in the additive cost. This will adjust the way that A* search making it more inadmissable .
 				\\
-				A* has a massive advantage over other algorithms which is the weighting of the nodes which allows the algorithm also consider distance to the target in deciding where to move to. This allows the algorithm to prioritise the queue based on the heuristic. 
+				A* has a massive advantage over other algorithms which is the weighting of the cells which allows the algorithm also consider distance to the target in deciding where to move to. This allows the algorithm to prioritise the queue based on the heuristic. 
 				\\
 				Put time comp here!!!
-			\subsection{Comparing Performance of Algorithms}
-
-		Describe the metrics used to compare performance \\
-		Descirbe how they were implemented \\
-		Compare and explain the difference in performance of the algorithms (See Teams for more details)
-
+				
+		\subsection{Algorithm Performance}
+			\subsubsection{Metrics to Quantify Performance}
+			
+			\subsubsection{Comparing Performance of Algorithms}
+			
+			\subsubsection{Planner Performance Prognosis}
+			
+				Describe the metrics used to compare performance \\
+				Descirbe how they were implemented \\
+				Compare and explain the difference in performance of the algorithms (See Teams for more details)
+	
 
 	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 	%%%%%%%%%%% PART 2 %%%%%%%%%%%%%%%%%
 	\section{Implementation in ROS}
+	
+	
+	
 	controller 
 	- Improved on P
 	- Considered PID 
