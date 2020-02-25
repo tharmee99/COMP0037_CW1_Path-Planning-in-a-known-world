@@ -40,7 +40,7 @@ class Move2GoalController(ControllerBase):
         
         # Data logging settings used for tuning of PID controller
         # Set logData to one of None, "Distance" or "Angle"
-        self.logData = "Angle"
+        self.logData = None
 
         self.iter = 0
         self.firstLog = True
