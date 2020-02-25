@@ -116,11 +116,13 @@
 					\hat{G}_{k} = \sqrt{(x_k-x_G)^2+(y_k-y_G)^2}
 				\end{equation}
 				
-				Depending on robot movement restrictions, the heuristic may be altered to take this into account. For example, the octile distance heuristic
+				Depending on robot movement restrictions, the heuristic may be altered to take this into account. For example, the octile distance is the minimal distance using horizontal, vertical and 45 degree offset trajectories. This corresponds to a robot that can move in 8 directions (N, NE, E, SE, S, etc...). The expression for computing this distance is shown in Eq. X.
 				
 				\begin{equation}
 				\hat{G}_{k} = max(|x_k-x_G|,|y_k-y_G|) + (\sqrt{2}-1)min(|x_k-x_G|,|y_k-y_G|)
 				\end{equation}
+				
+				Similarly to the octile distance, the Manhattan distance computes the shortest distance between two points using only vertical and horizontal trajectories. This corresponds to a robot that can move in 4 directions (N, E, S, W). The expression to compute this distance is shown in Eq. X. 
 				
 				\begin{equation}
 				\hat{G}_{k} = |x_k-x_G|+|y_k-y_G|
@@ -136,7 +138,19 @@
 				
 		\subsection{Algorithm Performance}
 			\subsubsection{Metrics to Quantify Performance}
-			
+				To measure and evaluate the performance of the planners, five metrics were utilized: Path cost of optimal path, total angle turned, maximum queue cardinality, total number of cells visited and path cardinality. The path cost refers to the total cost of traversing the path returned by the planning algorithm. The total angle turned corresponds to the sum of the absolute value of all of the individual turns the robot has to make. The maximum queue cardinality is the maximum number of elements the queue had at any point in the planning process. This reflects the memory usage of the algorithm. The total number of cells visited is as the name implies and reflects the time taken for the planner to compute the path. Finally the path cardinality is a count of the number of individual waypoints in the path.
+				\\
+				To compute the cost of the path the L-stage additive cost between the parent of a cell and the cell is computed for every cell on the path. This will give the total cost of traversing the path. This is done in the \textbf{extractPathEndingAtCell} function which starts from the goal and backtracks to the initial cell, cell by cell to compute the planned path.
+				\\
+				To compute the total angle turned, the trajectory of the robot was considered. By trajectory what is meant is the direction the robot is facing/moving at any point in the path. This is computed by taking the arctangent of the ratio between the difference in y coordinates and the difference in x coordinates of the cells. Whenever there is a change in trajectory, the difference in the trajectory will give the turned angle. The sum of the absolute values of these angles corresponds to the total angle turned. 
+				\\
+				The maximum queue cardinality was easily implemented by checking the size of the queue every time a new cell was added and updating the maximum value if it is exceeded.
+				\\
+				The total number of cells visited is computed easily in the implementation of the general search algorithm. Every time a new cell is added to the queue, the number of cells visited is incremented by one. 
+				\\
+				The path cardinality is computed by taking the length of the planned path which corresponds to the number of cells on the planned path. This is done after having traversed through all cells from the goal to the initial cell. 
+				\\
+				These metrics should give a good measure of how well a planning algorithm performs. A lower path cost represents a more optimal path while a larger number of cells visited may imply a inefficient algorithm. 
 			\subsubsection{Comparing Performance of Algorithms}
 			
 			\subsubsection{Planner Performance Prognosis}
