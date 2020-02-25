@@ -129,7 +129,6 @@ class ControllerBase(object):
         new_waypoints = []
 
         new_waypoints.append(path.waypoints[0])
-        new_waypoints.append(path.waypoints[1])
 
         perviousTrajectory = self.getAngle(path.waypoints[0],path.waypoints[1])
     
@@ -143,7 +142,7 @@ class ControllerBase(object):
                 turningAngle = 360 - turningAngle
 
             if turningAngle != 0:
-                new_waypoints.append(path.waypoints[waypointNumber+1])
+                new_waypoints.append(path.waypoints[waypointNumber])
 
         if path.waypoints[-1] not in new_waypoints:
             new_waypoints.append(path.waypoints[-1])

@@ -26,7 +26,7 @@ class Move2GoalController(ControllerBase):
         # self.angleErrorGain = rospy.get_param('angle_error_gain', 4)
         self.fileName = 'ang_log_data_5.csv'
         # Original gain values for proportional controller
-        self.controllerVariables["distanceErrorGain"] = rospy.get_param('distance_gain', {'Kp':3,'Ki':0,'Kd':0.1})
+        self.controllerVariables["distanceErrorGain"] = rospy.get_param('distance_gain', {'Kp':3,'Ki':0,'Kd':0.05})
         self.controllerVariables["angleErrorGain"] = rospy.get_param('angle_gain', {'Kp':3,'Ki':0,'Kd':0})
 
         # Tuned values for PID controller
