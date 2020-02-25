@@ -55,7 +55,7 @@ CATKIN_IGNORE
 
 # vs code folder
 .vscode/*
-*/.vscode
+*/.vscode/*
 .vscode/settings.json
 
 # tex files
@@ -84,3 +84,6 @@ CATKIN_IGNORE
 *.mtc1
 *.out
 *.synctex.gz
+
+# Jupyter notebook 
+*/.ipynb_checkpoints/*
