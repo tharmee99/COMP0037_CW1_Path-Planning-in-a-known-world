@@ -152,6 +152,23 @@
 				\\
 				These metrics should give a good measure of how well a planning algorithm performs. A lower path cost represents a more optimal path while a larger number of cells visited may imply a inefficient algorithm. 
 			\subsubsection{Evaluating Performance of Algorithms}
+			
+				\begin{figure}[H]
+					\renewcommand\thefigure{1.2}
+					\centering
+					
+					\includegraphics[scale=0.3]{"images/numberOfCellsVisited for each algorithm.png"}
+					\caption{The Number of Cells visited by each of the algorithm during path planning on a variety of maps.}
+				\end{figure}
+			
+				\begin{figure}[H]
+					\renewcommand\thefigure{1.3}
+					\centering
+					
+					\includegraphics[scale=0.3]{"images/pathTravelCost for each algorithm.png"}
+					\caption{The cost of traversing the path that was found by the planning algorithm.}
+				\end{figure}
+			
 				\textbf{FIFO - Breadth First Search}
 				\\
 				The Breadth First Algortihm performed poorly. The path cost of the derived path mostly wasn't optimal and especially on maps with a terrain cost superimposed, the algorithm performed poorly. In addition to this, the planner visits a large number of cells in comparison to the path cardinality implying a inefficient search algorithm. How-ever the maximum cardinality of the queue was relatively small suggesting a relatively small memory usage. Due to the simple nature of the planner, the complexity of the path was low resulting in minimal turns.
@@ -189,7 +206,9 @@
 	\section{Implementation in ROS}
 	
 		\subsection{Implentation of Planning Algorithms}
-		
+			
+			To investigate how these planning algorithm may be utilized and applied, the STDR simulator package in ROS was used. This is a 2D simulation platform in which maps and terrains may be loaded and simulated. Using the factory map that was provided along with a list of goals, we were able to simulate the movement of the robot. To investigate how well the robot was traversing the path, we implemented the following metrics: time taken to traverse the path, total distance travelled and total angle turned. 
+			
 		\subsection{Comparison of planners}
 		
 		\subsection{Description of Robot Controller}
