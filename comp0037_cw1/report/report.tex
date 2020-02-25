@@ -173,11 +173,25 @@
 		\subsection{Comparison of planners}
 		
 		\subsection{Description of Robot Controller}
-			controller 
-			- Improved on P
-			- Considered PID 
-			- Considered reducing the number of waypoints to make controlling better 
-			- Sampling rate can be a factor 
+		After implementing the algorithm and evaluating the different paths obtained from the different algorithms, on running the STDR simulation it was noticed that robot followed the path but it was rather very slow. It was realised that this was due to the deliberately inefficient controller provided and hence some efforts were put into attempting to improve the controller.
+		The low-level controller provided to us implemented a proportional controller. On playing around with the values of the gain and observing the velocity values being published it was understood that there is a lot of room for improvement as the velocity values being published were much below even 1m/s. 
+		
+		As an improvement it was thought that implementing a PID (Proportion-Integral-Derivative) controller would be a better than the Proportional controller that was initially implemented. PD controllers are a popular choice for controlling motors and hence it was thought that this might provide a better control. It was found that PID could be implemented as a rosnode and is ros package already available to use. However, due to lack of time to understand the working of this and implementing it on to this project the PID controller was implemented from scratch in the class \textbf{ControllerBase} by the function \textbf{pid_controller(self, error, controller_gains, afterFirst, delta_t=0.1)}.This implements PID as per the following equation:
+		\begin{equation}
+		
+		\end{equation}
+		where,
+		\begin{itemize}
+			\item K_P = Proportional Gain
+			\item K_I = Integral Gain
+			\item K_D = Derivative Gain
+		\end{itemize}
+	The values of these gains are determined by tuning them. However, without knowing the model of the robot it was not possible to use a tool like MATLAB or Simulink to tune the gains. Therefore, we adopted the method of empirical gain tuning and we systematically increased the gains of P, D and I components of the controller in the respective order till satisfactory improvement was achieved. The step repsonse plots and the error tracking plots were used to compare and determine any improvement in performance. Appendix \ref{appendix:Controller-tuning}
+	
+		Moreover, it is known that sampling rate can be a factor that affects the performance of the controller. If the sampling rate is not high enough to keep up with the rapid change in error value it can affect stability of the system. Practically, this is a known hardware limitation. However, in the case of this simulation, on experimenting with different values it was noticed that anything above 20Hz would give inconsistent time periods. 
+		
+		Further, it was noticed that because the path was represented by equidistant discrete waypoints even on a straight path the motion of the robot was a bit jittery and was not as smooth as we would desire it to be. This was corrected by reducing the number of waypoints that are input as reference to the controller. The function \textbf{simplifyPath(self, path)} in class \textbf{ControllerBase} implements this by removing all the waypoints which makes the same angle with its neighbour as does it neighbour with the cell after it, from the list.
+	
 	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 	
 	\newpage
@@ -192,5 +206,21 @@
 	\subsection{Controller Inheritance}
 	\label{appendix:controller}
 	\includegraphics[scale=0.6]{images/controller_inheritance.png}
+	\section{Tuning the Controller}
+	\label{appendix:Controller-tuning}
+	\subsection{Linear Distance Controller}
+	\includegraphics[scale=0.3]{images/control_dist_1_0_0.png}
+	\includegraphics[scale=0.3]{images/control_dist_2_0_0.png}
+	\includegraphics[scale=0.3]{images/control_dist_3_0_0.png}
+	\includegraphics[scale=0.3]{images/control_dist_3_0_0.01.png}\\
+	\includegraphics[scale=0.3]{images/control_dist_3_0_0.05.png}
+	\includegraphics[scale=0.3]{images/control_dist_3_0_0.1.png}
+	\subsection{Angular Orientation Controller}
+3	\includegraphics[scale=0.3]{images/control_ang_4_0_0.png}
+	\includegraphics[scale=0.3]{images/control_ang_8_0_0.png}
+	\includegraphics[scale=0.3]{images/control_ang_15_0_0.png}
+	\includegraphics[scale=0.3]{images/control_ang_15_0_1.png}
+	\includegraphics[scale=0.3]{images/control_ang_15_0_5.png}
+	\includegraphics[scale=0.3]{images/control_ang_5_0_3.png}
 	
 \end{document}
