@@ -64,7 +64,7 @@ class ControllerBase(object):
             "plannerPerformance" : {}
         }
 
-        self.lessWaypoints = True
+        self.lessWaypoints = False
         self.ExportDirRenameFlag = True
 
     def pid_controller(self, error, controller_gains, afterFirst, delta_t=0.1):
