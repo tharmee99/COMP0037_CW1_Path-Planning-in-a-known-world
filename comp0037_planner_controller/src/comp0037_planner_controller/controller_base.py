@@ -64,6 +64,9 @@ class ControllerBase(object):
             "plannerPerformance" : {}
         }
 
+        self.lessWaypoints = False
+        self.ExportDirRenameFlag = True
+
     def pid_controller(self, error, controller_gains, afterFirst, delta_t=0.1):
 
         integral_term = 0
@@ -129,7 +132,6 @@ class ControllerBase(object):
         new_waypoints = []
 
         new_waypoints.append(path.waypoints[0])
-        new_waypoints.append(path.waypoints[1])
 
         perviousTrajectory = self.getAngle(path.waypoints[0],path.waypoints[1])
     
@@ -143,7 +145,7 @@ class ControllerBase(object):
                 turningAngle = 360 - turningAngle
 
             if turningAngle != 0:
-                new_waypoints.append(path.waypoints[waypointNumber+1])
+                new_waypoints.append(path.waypoints[waypointNumber])
 
         if path.waypoints[-1] not in new_waypoints:
             new_waypoints.append(path.waypoints[-1])
@@ -162,17 +164,12 @@ class ControllerBase(object):
         self.pathMetrics["distanceTravelled"] = 0.0
         self.pathMetrics["totalAngleTurned"] = 0.0
 
-        newPath = self.simplifyPath(path)
+        if(self.lessWaypoints):
+            newPath = self.simplifyPath(path)
+        else:
+            newPath = path.waypoints
 
-        with open("waypoint_export.txt", "w") as out_file:
-            for cell in path.waypoints:
-                out_file.writelines(str(cell.coords) + '\n')
-
-        with open("waypoint_export_new", "w") as out_file:
-            for cell in newPath:
-                out_file.writelines(str(cell.coords) + '\n')
-
-        rospy.loginfo('Driving path to goal with ' + str(len(path.waypoints)) + ' waypoint(s)' + str(len(newPath)))
+        rospy.loginfo('Driving path to goal with ' +  str(len(newPath)) + ' waypoint(s)')
         
         startTime = time.time()
 
@@ -207,7 +204,14 @@ class ControllerBase(object):
                 self.pathMetrics['plannerPerformance']['pathCardinality'], self.pathMetrics['plannerPerformance']['pathTravelCost'], 
                 self.pathMetrics['plannerPerformance']['totalAngleTurned']
                ]
+        if(self.ExportDirRenameFlag):
+            if(self.lessWaypoints):
+                self.exportDirectory = os.path.splitext(self.exportDirectory)[0] + '_newController.csv'
+            else:
+                self.exportDirectory = os.path.splitext(self.exportDirectory)[0] + '_oldController.csv'
+            self.ExportDirRenameFlag = False
 
+        
         # If directory doesn't exist create directory
         if not os.path.exists(os.path.split(self.exportDirectory)[0]):
             os.makedirs(os.path.split(self.exportDirectory)[0])
