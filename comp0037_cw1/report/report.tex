@@ -151,8 +151,12 @@
 				The path cardinality is computed by taking the length of the planned path which corresponds to the number of cells on the planned path. This is done after having traversed through all cells from the goal to the initial cell. 
 				\\
 				These metrics should give a good measure of how well a planning algorithm performs. A lower path cost represents a more optimal path while a larger number of cells visited may imply a inefficient algorithm. 
-			\subsubsection{Comparing Performance of Algorithms}
-			
+			\subsubsection{Evaluating Performance of Algorithms}
+				\textbf{FIFO - Breadth First Search}
+				The Breadth First Algortihm performed poorly. The path cost of the derived path wasn't always optimal and especially on maps with a terrain cost superimposed, the algorithm performed poorly. In addition to this, the planner visits a large number of cells in comparison to the path cardinality implying a inefficient search algorithm. How-ever the maximum cardinality of the queue was relatively small suggesting a relatively small memory usage. Due to the simple nature of the planner, the complexity of the path was low resulting in minimal turns.
+				\\
+				\textbf{LIFO - Depth First Search}
+				This algorithm was by far the worst performing algorithm. The ature
 			\subsubsection{Planner Performance Prognosis}
 			
 				Describe the metrics used to compare performance \\
@@ -169,11 +173,11 @@
 		\subsection{Comparison of planners}
 		
 		\subsection{Description of Robot Controller}
-	controller 
-	- Improved on P
-	- Considered PID 
-	- Considered reducing the number of waypoints to make controlling better 
-	- Sampling rate can be a factor 
+			controller 
+			- Improved on P
+			- Considered PID 
+			- Considered reducing the number of waypoints to make controlling better 
+			- Sampling rate can be a factor 
 	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 	
 	\newpage
