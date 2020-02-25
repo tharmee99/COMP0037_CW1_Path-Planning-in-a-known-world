@@ -16,7 +16,7 @@ class AStarPlanner(DynamicPlanner):
         DynamicPlanner.__init__(self, title, occupancyGrid)
 
         self.nonZeroConstant = 5
-        self.scalingFactor = 10
+        self.scalingFactor = 2
 
         if(heuristic.lower() not in heurstic_list):
             heuristic = "0"
