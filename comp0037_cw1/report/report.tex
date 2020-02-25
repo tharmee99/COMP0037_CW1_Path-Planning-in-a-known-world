@@ -167,13 +167,13 @@
 				\textbf{A* Algorithm} 
 				The A* Algorithm was implemented with the 4 heuristics that were previously discussed. When the A* algorithm has a heuristic of zero, the planner is identical to Dijkstra's Algorithm. With the addition of a constant heuristics (i.e. a non-negative constant), the A* algorithm is still identical to Dijkstra's. This is due to the fact that there is no favouring in which cell should be considered first as all cells are assigned the same heuristic values. Even though these scenarios were simulated and observed for all of the given maps, these variations of A* are not illustrated in the graphs in Fig. X.X to avoid repetition. It was confirmed that these cases were exactly identical to A* and one variation of a constant with value of 5 is shown for comparison.
 				\\
-				
+				The euclidean distance heuristic acted as intended. Due to its admissible nature, the addition of the heuristic did not alter the path cost in any of the cases. However it did alter the number of cells visited; In all of the cases, the A* algorithm with euclidean distance heuristic performed better (having visited less cells) than Dijkstra's Algorithm. This is to be expected as the whole purpose of heuristics is to limit the number of cells visited by biasing cells to be higher up in the priority queue. However, as the robot in our case is able to move in 8 directions (octile movement), the euclidean heuristics significantly under-estimates the distance to the goal. Therefore the heuristic is not optimal. 
+				\\
+				The octile distance heuristic 
 			\subsubsection{Planner Performance Prognosis}
-			
-				Describe the metrics used to compare performance \\
-				Descirbe how they were implemented \\
-				Compare and explain the difference in performance of the algorithms (See Teams for more details)
-	
+				Out of the 4 heuristics available, the constant provides the same performance as Dijkstra’s, thus it gives an optimal solution in all the cases however it must explore many cells for it to happen, making the algorithm slow running. The Euclidean distance will also give an optimal solution in all possible maps. However it will explore the most cells out of the remaining heuristics. The octile distance will give the as good of performance in terms the path being optimal as Euclidean. It will have a better performance in terms of the number of cells explored. All of the aforementioned heuristics are admissible. Manhattan distance heuristic provides the best performance in terms of number of nodes explored, however it is an inadmissible heuristic thus there is a possibility of it giving a non optimal path.  
+				\\
+				There is a possibility of creating a combination of these heuristics by averaging them out. The goal would be to reduce the number of nodes explored by the A* algorithm. For this it is possible to average out the heuristic values for Octile and Manhattan distances, giving a value in between. This could potentially create a better heuristic than octile in terms of cells explored, however there is no way of telling if it will be an admissible heuristic. Thus the octile distance would be the best heuristic to use as it will guarantee an optimal solution given a weighting of 1. 
 
 	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 	%%%%%%%%%%% PART 2 %%%%%%%%%%%%%%%%%
