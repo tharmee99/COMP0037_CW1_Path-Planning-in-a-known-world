@@ -206,18 +206,25 @@
 	\section{Implementation in ROS}
 	
 		\subsection{Implentation of Planning Algorithms}
-		Appendix \ref{appendix:metrics} 
-			
+		\textit{Detailed graphs and further analysis can be found in Appendix \ref{appendix:metrics}} 
+			\\
+			\\
 			To investigate how these planning algorithm may be utilized and applied, the STDR simulator package in ROS was used. This is a 2D simulation platform in which maps and terrains may be loaded and simulated. Using the factory map that was provided along with a list of goals, we were able to simulate the movement of the robot. To investigate how well the robot was traversing the path, we implemented the following metrics: time taken to traverse the path, total distance travelled and total angle turned. 
-			
+			\\
+			The distance travelled by the robot was computed by calculating the distance travelled between consecutive twist broadcasts. By doing this we also include any oscillatory behaviour causing an increase in distance travelled. In addition, this implementation will not consider the initial teleport of the robot to the first goal. The total angle turned is computed in a similar fashion; every time the twist topic is broadcast, the angular position of the robot is noted and the difference in pose is summed to give the total angle turned by the robot. The time taken for the robot to traverse a path was implemented using python's \textbf{time} class. We utilized this to measure how long it takes for the robot to traverse along all waypoints. This approach was implemented in the \textbf{drivePathToGoal} function. The functionality of the metrics were confirmed using manual timing and measurement techniques. 
+						
 		\subsection{Comparison of planners}
-		\includegraphics[scale=0.3]{images/compare_robot_A_Algorithm_Heuristic_2Octile.png}
-		\includegraphics[scale=0.3]{images/compare_robot_A_Algorithm_Heuristic_Octile.png}
-		\includegraphics[scale=0.3]{images/compare_robot_A_Algorithm_Heuristic_Manhattan.png}
+			The planners chosen to obtain the path in this example were the A* planners with octile and Manhattan heuristics. These were chosen as octile was the best performing planner that also returned the optimal path while Manhattan seemed to be a good compromise between optimality and number of cells visited. Similarly, the octile heuristic with a weighting of 2 is also a compromise between optimality and cells visited. Therefore these three planners were used. 
+			\\
+			From the graphs below it is clearly visible that the A* planner with the weighted octile heuristic is the best planner achieving on average the best times out of the three chosen planners. 
+			
+			\includegraphics[scale=0.18]{images/compare_robot_A_Algorithm_Heuristic_2Octile.png}
+			\includegraphics[scale=0.18]{images/compare_robot_A_Algorithm_Heuristic_Octile.png}
+			\includegraphics[scale=0.18]{images/compare_robot_A_Algorithm_Heuristic_Manhattan.png}
 		\subsection{Description of Robot Controller}
-		After implementing the algorithm and evaluating the different paths obtained from the different algorithms, on running the STDR simulation it was noticed that robot followed the path but it was rather very slow. It was realised that this was due to the deliberately inefficient controller provided and hence some efforts were put into attempting to improve the controller.
+		After implementing the algorithm and evaluating the different paths obtained from the different path planning algorithms the STDR simulation test were performed. On the first trial it was noticed that the robot followed the path, but it was rather very slow. It was realised that this was due to the deliberately inefficient controller provided and hence efforts were put into attempting to improve the controller.
 		
-		The low-level controller provided to us implemented a proportional controller give by,
+		The low-level controller provided to us implemented a proportional controller given by,
 		\begin{equation}
 		u(t)=K_P \; e(t)
 		\end{equation}
@@ -225,11 +232,11 @@
 		\begin{itemize}
 			\item $K_P$ = Proportional Gain
 		\end{itemize}
-		On playing around with the values of the gain and observing the velocity values being published it was understood that there is a lot of room for improvement as the velocity values being published were much below even 1m/s. 
+		On playing around with the values of the gain and observing the velocity values being published it was understood that there was a lot of room for improvement as the velocity values being published were much below even 1m/s while the maximum linear velocity limit was set at 10m/s.
 		
-		As an improvement it was thought that implementing a PID (Proportion-Integral-Derivative) controller would be a better than the Proportional controller that was initially implemented. PD controllers are a popular choice for controlling motors and hence it was thought that this might provide a better control. It was found that PID could be implemented as a rosnode and is a ros package already available to use. However, due to lack of time to understand the working of this and implementing it on to this project the PID controller was implemented from scratch in the class \textbf{ControllerBase} by the function \textbf{pid\_controller(self, error, controller\_gains, afterFirst, delta\_t=0.1)}.This implements PID as per the following equation:
+		As an improvement it was thought that implementing a PID (Proportion-Integral-Derivative) controller would be a better than the Proportional controller that was provided. PD controllers are a popular choice for controlling motors and hence it was thought that this might provide a better control. It was found that PID could be implemented as a rosnode and is a ros package already available to use. However, due to lack of time to understand the working of this and implementing it on to this project, the PID controller was implemented from scratch in the class \textbf{ControllerBase} by the function \textbf{pid\_controller(self, error, controller\_gains, afterFirst, delta\_t=0.1)}.This implements PID as per the following equation:
 		\begin{equation}
-			u(t)=K_P \; e(t) + K_I \int_{0}^{t}e(t')dt'+K_D \frac{de(t)}{dt}
+		u(t)=K_P \; e(t) + K_I \int_{0}^{t}e(t')dt'+K_D \frac{de(t)}{dt}
 		\end{equation}
 		where,
 		\begin{itemize}
@@ -237,12 +244,14 @@
 			\item $K_I$ = Integral Gain
 			\item $K_D$ = Derivative Gain
 		\end{itemize}
-	
-	The values of these gains are determined by tuning them. However, without knowing the model of the robot it was not possible to use a tool like MATLAB or Simulink to tune the gains. Therefore, we adopted the method of empirical gain tuning and we systematically increased the gains of P, D and I components of the controller in the respective order till satisfactory improvement was achieved. The step repsonse plots and the error tracking plots were used to compare and determine any improvement in performance. A much more detailed analysis and various steos involved in tuning the gains can be found in the notebooks referenced in Appendix \ref{appendix:Controller-tuning}
-	
-	\includegraphics[scale=0.3]{images/compare_both.png}
-	
-		Moreover, it is known that sampling rate can be a factor that affects the performance of the controller. If the sampling rate is not high enough to keep up with the rapid change in error value it can affect stability of the system. Practically, this is a known hardware limitation. However, in the case of this simulation, on experimenting with different values it was noticed that anything above 20Hz would give inconsistent time periods. At the current sampling rate the pose update, can be seen as increasing in signal is represented coarsely by the pose update. 
+		
+		Usually the values of these gains are determined by tuning them and observing their step response using tools like MATLAB and Simulink. However, without knowing the model of the robot it was not possible to use these tools to tune the gains. Therefore, we adopted the method of empirical gain tuning and we systematically increased the gains of P, D and I components of the controller in the respective order till satisfactory improvement was achieved. The step repsonse plots and the error tracking plots were used to compare and determine any improvement in performance. A much more detailed analysis and various the steps we went through for tuning the gains can be found in the notebooks referenced in Appendix \ref{appendix:Controller-tuning}.
+		
+		\includegraphics[scale=0.3]{images/compare_both.png}
+		
+		Figure X.X, shows that the distance error and orientation error tracks 0 quicker than the proportional controller initially provided to us. The previous comparison in Figure X.X of different metrics for the old and new controller also show a huge improvement in time taken to travel the path (Note: that these measurements were taken with the parameter \textbf{'time\_scale\_factor'} (defined in \textbf{time\_server\_node.py}) set to 1.)
+		
+		Moreover, it is known that sampling rate can be a factor that affects the performance of the controller. If the sampling rate is not high enough to keep up with the rapid change in error value it can affect stability of the system. Practically, this is a known hardware limitation. However, in the case of this simulation, on experimenting with different values it was noticed that anything above 20Hz would give inconsistent time periods. At the current sampling rate the pose update, can be seen as increasing in signal is represented coarsely by the pose update. This also contributed to making it difficult to improve the stability of the function.
 		
 		Further, it was noticed that because the path was represented by equidistant discrete waypoints even on a straight path the motion of the robot was a bit jittery and was not as smooth as we would desire it to be. This was corrected by reducing the number of waypoints that are input as reference to the controller. The function \textbf{simplifyPath(self, path)} in class \textbf{ControllerBase} implements this by removing all the waypoints which makes the same angle with its neighbour as does it neighbour with the cell after it, from the list.
 	
