@@ -152,6 +152,23 @@
 				\\
 				These metrics should give a good measure of how well a planning algorithm performs. A lower path cost represents a more optimal path while a larger number of cells visited may imply a inefficient algorithm. 
 			\subsubsection{Evaluating Performance of Algorithms}
+			
+				\begin{figure}[H]
+					\renewcommand\thefigure{1.2}
+					\centering
+					
+					\includegraphics[scale=0.3]{"images/numberOfCellsVisited for each algorithm.png"}
+					\caption{The Number of Cells visited by each of the algorithm during path planning on a variety of maps.}
+				\end{figure}
+			
+				\begin{figure}[H]
+					\renewcommand\thefigure{1.3}
+					\centering
+					
+					\includegraphics[scale=0.3]{"images/pathTravelCost for each algorithm.png"}
+					\caption{The cost of traversing the path that was found by the planning algorithm.}
+				\end{figure}
+			
 				\textbf{FIFO - Breadth First Search}
 				\\
 				The Breadth First Algortihm performed poorly. The path cost of the derived path mostly wasn't optimal and especially on maps with a terrain cost superimposed, the algorithm performed poorly. In addition to this, the planner visits a large number of cells in comparison to the path cardinality implying a inefficient search algorithm. How-ever the maximum cardinality of the queue was relatively small suggesting a relatively small memory usage. Due to the simple nature of the planner, the complexity of the path was low resulting in minimal turns.
@@ -174,9 +191,9 @@
 				\\
 				The euclidean distance heuristic acted as intended. Due to its admissible nature, the addition of the heuristic did not alter the path cost in any of the cases. However it did alter the number of cells visited; In all of the cases, the A* algorithm with euclidean distance heuristic performed better (having visited less cells) than Dijkstra's Algorithm. This is to be expected as the whole purpose of heuristics is to limit the number of cells visited by biasing cells to be higher up in the priority queue. However, as the robot in our case is able to move in 8 directions (octile movement), the euclidean heuristics significantly under-estimates the distance to the goal. Therefore the heuristic is not optimal.
 				\\
-				The octile distance heuristic corresponds to a robot moving in 8 directions just as the one in the simulations. This heuristic will more closely approximate the true cost to the goal cell compared to the euclidean heuristic; the value of the distance will be higher but still less than (or equal to) the actual distance. As this approximation of the distance is larger, the number of cells visited will be fewer. This is due to a higher value of the heuristic meaning a larger bias towards the cells that are closer to the goals which in turn results in these cells being visited first. As the heuristic is still admissible, the path that is obtained is the optimal path and as a result of the octile heuristic it also achieves the optimal path having visited as many cells. 
+				The octile distance heuristic corresponds to a robot moving in 8 directions just as the one in the simulations. This heuristic will more closely approximate the true cost to the goal cell compared to the euclidean heuristic; the value of the distance will be higher but still less than (or equal to) the actual distance. As this approximation of the distance is larger, the number of cells visited will be fewer. This is due to a higher value of the heuristic meaning a larger bias towards the cells that are closer to the goals which in turn results in these cells being visited first. As the heuristic is still admissible, the path that is obtained is the optimal path and as a result of the octile heuristic it also achieves this having visited as many cells. 
 				\\
-				
+				The last heuristic that was implemented was the Manhattan heuristic. This heuristic is an even larger approximation of the distance to the goal resulting in a further reduction in the number of cells visited. However as this heuristic is not admissible in the case of an octile robot, it cannot guarantee that the returned path will be the optimal path. Throughout the maps that were given to us, the Manhattan algorithm performed well with a path cost close to if not identical to that of the optimal path. 
 				
 			\subsubsection{Planner Performance Prognosis}
 			
@@ -190,6 +207,9 @@
 	
 		\subsection{Implentation of Planning Algorithms}
 		Appendix \ref{appendix:metrics} 
+			
+			To investigate how these planning algorithm may be utilized and applied, the STDR simulator package in ROS was used. This is a 2D simulation platform in which maps and terrains may be loaded and simulated. Using the factory map that was provided along with a list of goals, we were able to simulate the movement of the robot. To investigate how well the robot was traversing the path, we implemented the following metrics: time taken to traverse the path, total distance travelled and total angle turned. 
+			
 		\subsection{Comparison of planners}
 		\includegraphics[scale=0.3]{images/compare_robot_A_Algorithm_Heuristic_2Octile.png}
 		\includegraphics[scale=0.3]{images/compare_robot_A_Algorithm_Heuristic_Octile.png}
