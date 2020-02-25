@@ -116,7 +116,7 @@
 					\hat{G}_{k} = \sqrt{(x_k-x_G)^2+(y_k-y_G)^2}
 				\end{equation}
 				
-				Depending on robot movement restrictions, the heuristic may be altered to take this into account. For example, the octile distance is the minimal distance using horizontal, vertical and 45 degree offset trajectories. This corresponds to a robot that can move in 8 directions (N, NE, E, SE, S, etc...). The expression for computing this distance is shown in Eq. X.
+				Depending on robot movement restrictions, the heuristic may be altered to take this into account. For example, the octile distance is the minimal distance using horizontal, vertical and 45 degree diagonal trajectories. This corresponds to a robot that can move in 8 directions (N, NE, E, SE, S, etc...). The expression for computing this distance is shown in Eq. X.
 				
 				\begin{equation}
 				\hat{G}_{k} = max(|x_k-x_G|,|y_k-y_G|) + (\sqrt{2}-1)min(|x_k-x_G|,|y_k-y_G|)
@@ -153,25 +153,34 @@
 				These metrics should give a good measure of how well a planning algorithm performs. A lower path cost represents a more optimal path while a larger number of cells visited may imply a inefficient algorithm. 
 			\subsubsection{Evaluating Performance of Algorithms}
 				\textbf{FIFO - Breadth First Search}
-				The Breadth First Algortihm performed poorly. The path cost of the derived path wasn't always optimal and especially on maps with a terrain cost superimposed, the algorithm performed poorly. In addition to this, the planner visits a large number of cells in comparison to the path cardinality implying a inefficient search algorithm. How-ever the maximum cardinality of the queue was relatively small suggesting a relatively small memory usage. Due to the simple nature of the planner, the complexity of the path was low resulting in minimal turns.
+				\\
+				The Breadth First Algortihm performed poorly. The path cost of the derived path mostly wasn't optimal and especially on maps with a terrain cost superimposed, the algorithm performed poorly. In addition to this, the planner visits a large number of cells in comparison to the path cardinality implying a inefficient search algorithm. How-ever the maximum cardinality of the queue was relatively small suggesting a relatively small memory usage. Due to the simple nature of the planner, the complexity of the path was low resulting in minimal turns.
 				\\
 				\textbf{LIFO - Depth First Search}
+				\\
 				This algorithm was by far the worst performing algorithm. This algorithm consistently returned the path that had the highest path cost out of all the planning algorithms. Additionally, it also had exceptionally large number of turns and bends. However, the number of cells traversed was comparable to the other algorithms and relatively low for the given path cardinality. Compared to the performance of the other planners, the depth first planner is completely inefficient and returns a chaotic path.
 				\\
 				\textbf{Greedy Algorithm}
+				\\
 				The greedy algorithm performed extremely well in most cases. It consistently had the lowest number of cells visited while searching for the path. However it had a slightly higher path cost which is most prominent in the lines\_terrain map. This is to be expected as the greedy algorithm (similar to breadth and depth first) do not have a notion of path cost while they are searching for the path. This is most prominent when the terrain cost isn't uniform. The maximum queue cardinality was neither exceptionally high nor exceptionally low when compared to that of the other planners that were implemented. 
 				\\
 				\textbf{Dijkstra's Algorithm}
+				\\
 				Dijkstra's Algorithm produced the path with the minimal path cost as expected. This means that it finds the optimal path. Besides this, the algorithm visited a relatively large number of cells while searching for the path meaning that the search algorithm is slightly inefficient. 
 				\\
-				\textbf{A* Algorithm} 
+				\textbf{A* Algorithm}
+				\\ 
 				The A* Algorithm was implemented with the 4 heuristics that were previously discussed. When the A* algorithm has a heuristic of zero, the planner is identical to Dijkstra's Algorithm. With the addition of a constant heuristics (i.e. a non-negative constant), the A* algorithm is still identical to Dijkstra's. This is due to the fact that there is no favouring in which cell should be considered first as all cells are assigned the same heuristic values. Even though these scenarios were simulated and observed for all of the given maps, these variations of A* are not illustrated in the graphs in Fig. X.X to avoid repetition. It was confirmed that these cases were exactly identical to A* and one variation of a constant with value of 5 is shown for comparison.
 				\\
-				The euclidean distance heuristic acted as intended. Due to its admissible nature, the addition of the heuristic did not alter the path cost in any of the cases. However it did alter the number of cells visited; In all of the cases, the A* algorithm with euclidean distance heuristic performed better (having visited less cells) than Dijkstra's Algorithm. This is to be expected as the whole purpose of heuristics is to limit the number of cells visited by biasing cells to be higher up in the priority queue. However, as the robot in our case is able to move in 8 directions (octile movement), the euclidean heuristics significantly under-estimates the distance to the goal. Therefore the heuristic is not optimal. 
+				The euclidean distance heuristic acted as intended. Due to its admissible nature, the addition of the heuristic did not alter the path cost in any of the cases. However it did alter the number of cells visited; In all of the cases, the A* algorithm with euclidean distance heuristic performed better (having visited less cells) than Dijkstra's Algorithm. This is to be expected as the whole purpose of heuristics is to limit the number of cells visited by biasing cells to be higher up in the priority queue. However, as the robot in our case is able to move in 8 directions (octile movement), the euclidean heuristics significantly under-estimates the distance to the goal. Therefore the heuristic is not optimal.
 				\\
-				The octile distance heuristic 
+				The octile distance heuristic corresponds to a robot moving in 8 directions just as the one in the simulations. This heuristic will more closely approximate the true cost to the goal cell compared to the euclidean heuristic; the value of the distance will be higher but still less than (or equal to) the actual distance. As this approximation of the distance is larger, the number of cells visited will be fewer. This is due to a higher value of the heuristic meaning a larger bias towards the cells that are closer to the goals which in turn results in these cells being visited first. As the heuristic is still admissible, the path that is obtained is the optimal path and as a result of the octile heuristic it also achieves the optimal path having visited as many cells. 
+				\\
+				
+				
 			\subsubsection{Planner Performance Prognosis}
-				Out of the 4 heuristics available, the constant provides the same performance as Dijkstra’s, thus it gives an optimal solution in all the cases however it must explore many cells for it to happen, making the algorithm slow running. The Euclidean distance will also give an optimal solution in all possible maps. However it will explore the most cells out of the remaining heuristics. The octile distance will give the as good of performance in terms the path being optimal as Euclidean. It will have a better performance in terms of the number of cells explored. All of the aforementioned heuristics are admissible. Manhattan distance heuristic provides the best performance in terms of number of nodes explored, however it is an inadmissible heuristic thus there is a possibility of it giving a non optimal path.  
+			
+				Out of the 4 heuristics available, the constant provides the same performance as Dijkstra’s, thus it gives an optimal solution in all the cases however it must explore many cells for it to happen, making the algorithm slow running. The Euclidean distance will also give an optimal solution in all possible maps. However it will explore the most cells out of the remaining heuristics. The octile distance will give the as good of performance in terms the path being optimal as Euclidean. It will have a better performance in terms of the number of cells explored. All of the aforementioned heuristics are admissible. Manhattan distance heuristic provides the best performance in terms of number of nodes explored, however it is an inadmissible heuristic thus there is a possibility of it giving a non optimal path which can be seen by closely studying the graphs in Fig. X.X.
 				\\
 				There is a possibility of creating a combination of these heuristics by averaging them out. The goal would be to reduce the number of nodes explored by the A* algorithm. For this it is possible to average out the heuristic values for Octile and Manhattan distances, giving a value in between. This could potentially create a better heuristic than octile in terms of cells explored, however there is no way of telling if it will be an admissible heuristic. Thus the octile distance would be the best heuristic to use as it will guarantee an optimal solution given a weighting of 1. 
 
@@ -187,15 +196,15 @@
 		After implementing the algorithm and evaluating the different paths obtained from the different algorithms, on running the STDR simulation it was noticed that robot followed the path but it was rather very slow. It was realised that this was due to the deliberately inefficient controller provided and hence some efforts were put into attempting to improve the controller.
 		The low-level controller provided to us implemented a proportional controller. On playing around with the values of the gain and observing the velocity values being published it was understood that there is a lot of room for improvement as the velocity values being published were much below even 1m/s. 
 		
-		As an improvement it was thought that implementing a PID (Proportion-Integral-Derivative) controller would be a better than the Proportional controller that was initially implemented. PD controllers are a popular choice for controlling motors and hence it was thought that this might provide a better control. It was found that PID could be implemented as a rosnode and is ros package already available to use. However, due to lack of time to understand the working of this and implementing it on to this project the PID controller was implemented from scratch in the class \textbf{ControllerBase} by the function \textbf{pid_controller(self, error, controller_gains, afterFirst, delta_t=0.1)}.This implements PID as per the following equation:
+		As an improvement it was thought that implementing a PID (Proportion-Integral-Derivative) controller would be a better than the Proportional controller that was initially implemented. PD controllers are a popular choice for controlling motors and hence it was thought that this might provide a better control. It was found that PID could be implemented as a rosnode and is ros package already available to use. However, due to lack of time to understand the working of this and implementing it on to this project the PID controller was implemented from scratch in the class \textbf{ControllerBase} by the function \textbf{pid\_controller(self, error, controller\_gains, afterFirst, delta\_t=0.1)}.This implements PID as per the following equation:
 		\begin{equation}
-		
+			u(t)=K_P \; e(t) + K_I \int_{0}^{t}e(t')dt'+K_D \frac{de(t)}{dt}
 		\end{equation}
 		where,
 		\begin{itemize}
-			\item K_P = Proportional Gain
-			\item K_I = Integral Gain
-			\item K_D = Derivative Gain
+			\item $K_P$ = Proportional Gain
+			\item $K_I$ = Integral Gain
+			\item $K_D$ = Derivative Gain
 		\end{itemize}
 	The values of these gains are determined by tuning them. However, without knowing the model of the robot it was not possible to use a tool like MATLAB or Simulink to tune the gains. Therefore, we adopted the method of empirical gain tuning and we systematically increased the gains of P, D and I components of the controller in the respective order till satisfactory improvement was achieved. The step repsonse plots and the error tracking plots were used to compare and determine any improvement in performance. Appendix \ref{appendix:Controller-tuning}
 	
@@ -220,13 +229,13 @@
 	\section{Tuning the Controller}
 	\label{appendix:Controller-tuning}
 	\subsection{Linear Distance Controller}
-	\includegraphics[scale=0.2]{images/control_dist_1_0_0.png}
-	\includegraphics[scale=0.2]{images/control_dist_2_0_0.png}
+	\includegraphics[scale=0.25]{images/control_dist_1_0_0.png}\\
+	\includegraphics[scale=0.25]{images/control_dist_2_0_0.png}
 	\\
-	\includegraphics[scale=0.2]{images/control_dist_3_0_0.png}
-	\includegraphics[scale=0.2]{images/control_dist_3_0_0.01.png}\\
-	\includegraphics[scale=0.2]{images/control_dist_3_0_0.05.png}
-	\includegraphics[scale=0.2]{images/control_dist_3_0_0.1.png}
+	\includegraphics[scale=0.25]{images/control_dist_3_0_0.png}\\
+	\includegraphics[scale=0.25]{images/control_dist_3_0_0.01.png}\\
+	\includegraphics[scale=0.25]{images/control_dist_3_0_0.05.png}\\
+	\includegraphics[scale=0.25]{images/control_dist_3_0_0.1.png}
 	\subsection{Angular Orientation Controller}
 3	\includegraphics[scale=0.4]{images/control_ang_4_0_0.png}
 	\includegraphics[scale=0.4]{images/control_ang_8_0_0.png}
@@ -234,6 +243,6 @@
 	\\
 	\includegraphics[scale=0.4]{images/control_ang_15_0_1.png}
 	\includegraphics[scale=0.4]{images/control_ang_15_0_5.png}
-	\includegraphics[scale=0.4]{images/control_ang_5_0_3.png}
+	\includegraphics[scale=0.4]{images/control_ang_15_0_3.png}
 	
 \end{document}
