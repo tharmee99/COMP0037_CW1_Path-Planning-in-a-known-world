@@ -46,7 +46,15 @@ class DynamicPlanner(CellBasedForwardSearch):
         if(newPathCost < cell.pathCost):
             cell.parent = parentCell
             cell.pathCost = newPathCost
-
             priorityValue = newPathCost + self.calc_heuristics(cell)
+            self.reorderPriorityQueue()
+            # self.plannerQueue.put((priorityValue, cell))
 
-            self.plannerQueue.put((priorityValue, cell))
+    def reorderPriorityQueue(self):
+        newQueue = PriorityQueue()
+
+        while self.priorityQueue.empty() is False:
+            tuple = self.priorityQueue.get()
+            newQueue.put(tuple)
+             
+        self.priorityQueue = newQueue
